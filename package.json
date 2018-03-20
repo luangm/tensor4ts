@@ -1,0 +1,47 @@
+{
+  "name": "tensor4js",
+  "version": "0.1.0",
+  "description": "Tensor for JavaScript",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tensor"
+  ],
+  "author": {
+    "name": "Guangmiao Luan",
+    "email": "luangm@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luangm/tensor4js.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^22.2.0",
+    "glslify-loader": "^1.0.2",
+    "jest": "^22.4.2",
+    "raw-loader": "^0.5.1",
+    "ts-jest": "^22.4.2",
+    "ts-loader": "^4.1.0",
+    "typescript": "^2.7.2",
+    "uglifyjs-webpack-plugin": "^1.2.4",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
