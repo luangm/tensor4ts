@@ -120,6 +120,10 @@ export default class Tensor {
     return TensorMath.fill(this, scalar, this);
   }
 
+  matmul(other: Tensor): Tensor {
+    return TensorMath.matmul(this, other);
+  }
+
   mod(other: Tensor): Tensor {
     return TensorMath.mod(this, other);
   }

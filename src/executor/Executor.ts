@@ -3,6 +3,7 @@ import ShapeUtils from "../utils/ShapeUtils";
 import Operation from "../op/Operation";
 import TransformOp from "../op/transform/TransformOp";
 import ReductionOp from "../op/reduction/ReductionOp";
+import IndexOp from "../op/index/IndexOp";
 
 /**
  * Executor class is used to execute Ops
@@ -39,7 +40,34 @@ export class Executor {
       return;
     }
 
+    if (op instanceof IndexOp) {
+      Executor._execIndex(op);
+      return;
+    }
+
     throw new Error("Cannot Execute Unknown Op");
+  }
+
+  private static _execIndex(op: IndexOp): void {
+    switch (op.result.rank) {
+      case 0:
+      case 1:
+        this._execIndexVector(op);
+        break;
+    }
+  }
+
+  private static _execIndexVector(op: IndexOp): void {
+    let input = op.input.data;
+    let result = op.result.data;
+
+    let accum = op.body(input[0]);
+    for (let i = 0; i < input.length; i++) {
+      let value = op.body(input[i]);
+      let updated = op.update(accum, value, result[0], i);
+      accum = updated[0];
+      result[0] = updated[1];
+    }
   }
 
   private static _execPairwise(op: PairwiseOp): void {

@@ -14,7 +14,6 @@ TODO:
 * ~~MatMul Standard GEMM~~ [DONE]
 * GEMM Optimization (Blocking + Packing)
 * WebGL Add
-* IndexSet
-* ArgMin
+* ~~ArgMin~~[DONE]
 * Emscripten / WebAssembly
 * Size Optimization

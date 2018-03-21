@@ -48,6 +48,9 @@ import ReduceProdOp from "./op/reduction/ReduceProdOp";
 import ReduceMinOp from "./op/reduction/ReduceMinOp";
 import ReduceMeanOp from "./op/reduction/ReduceMeanOp";
 import ReduceMaxOp from "./op/reduction/ReduceMaxOp";
+import MatMulOp from "./op/special/MatMulOp";
+import ArgMaxOp from "./op/index/ArgMaxOp";
+import ArgMinOp from "./op/index/ArgMinOp";
 
 export default class TensorMath {
 
@@ -86,19 +89,26 @@ export default class TensorMath {
     return result;
   }
 
-  // TODO
-  static argMax(base: Tensor, dim: number): Tensor {
-    return null;
-    // let resultShape = base.shape.slice();
-    // resultShape[dim] = 1;
-    // let result = new Tensor({shape: resultShape});
-    // let op = new MaxIndexOp(base, null, result);
-    // Executor.execAtDim(op, dim);
-    //
-    // resultShape = base.shape.slice();
-    // resultShape.splice(dim, 1);
-    //
-    // return result.reshape(resultShape);
+  static argMax(base: Tensor, dim: number = -1, keepDims: boolean = false): Tensor {
+    let resultShape = ShapeUtils.reduceShape(base.shape, dim, true);
+    let result = Tensor.zeros(resultShape);
+    Executor.exec(new ArgMaxOp(base, null, result, dim));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dim, false);
+    return result.reshape(reducedShape);
+  }
+
+  static argMin(base: Tensor, dim: number = -1, keepDims: boolean = false): Tensor {
+    let resultShape = ShapeUtils.reduceShape(base.shape, dim, true);
+    let result = Tensor.zeros(resultShape);
+    Executor.exec(new ArgMinOp(base, null, result, dim));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dim, false);
+    return result.reshape(reducedShape);
   }
 
   // TODO
@@ -128,12 +138,6 @@ export default class TensorMath {
     return result;
   }
 
-  static atanh(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AtanhOp(base, null, result));
-    return result;
-  }
-
   // static conv2dImageGrad(image, kernel, grad) {
   //   let numKernels = kernel.shape[0];
   //
@@ -150,6 +154,12 @@ export default class TensorMath {
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
   // }
+
+  static atanh(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new AtanhOp(base, null, result));
+    return result;
+  }
 
   // TODO
   static conv2d(image: Tensor, kernel: Tensor): Tensor {
@@ -218,12 +228,6 @@ export default class TensorMath {
     return result;
   }
 
-  static linspace(base: Tensor, start: number, stop: number = 0, num: number = 1, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
-    return result;
-  }
-
   // static logSumExp(base, dim = -1) {
   //   if (dim < 0) {
   //     dim += base.rank;
@@ -236,15 +240,15 @@ export default class TensorMath {
   //   return TensorMath.add(log, max);
   // }
 
-  static log(base: Tensor, result?: Tensor): Tensor {
+  static linspace(base: Tensor, start: number, stop: number = 0, num: number = 1, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LogOp(base, null, result));
+    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
     return result;
   }
 
-  static log1p(base: Tensor, result?: Tensor): Tensor {
+  static log(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new Log1pOp(base, null, result));
+    Executor.exec(new LogOp(base, null, result));
     return result;
   }
 
@@ -278,7 +282,12 @@ export default class TensorMath {
   //   return result;
   // }
 
-  // TODO
+  static log1p(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new Log1pOp(base, null, result));
+    return result;
+  }
+
   static matmul(left: Tensor, right: Tensor, transposeLeft = false, transposeRight = false, result?: Tensor): Tensor {
     if (left.rank !== 2 || right.rank !== 2) {
       throw new Error('Invalid Operation, Rank of left and right must be 2');
@@ -288,7 +297,7 @@ export default class TensorMath {
     shape[0] = transposeLeft ? left.shape[1] : left.shape[0];
     shape[1] = transposeRight ? right.shape[0] : right.shape[1];
     result = result || Tensor.zeros(shape);
-    // Executor.exec(new MatMulOp(left, right, result, transposeA, transposeB));
+    Executor.exec(new MatMulOp(left, right, result, transposeLeft, transposeRight));
     return result;
   }
 

@@ -70,6 +70,34 @@ test('acos', function () {
   expect(z).toEqual(expected);
 });
 
+test('expm1', function () {
+  let x = Tensor.linspace(1, 4, 4);
+  let z = TensorMath.expm1(x);
+  let expected = Tensor.create([Math.expm1(1), Math.expm1(2), Math.expm1(3), Math.expm1(4)]);
+  expect(z).toEqual(expected);
+});
+
+test('log1p', function () {
+  let x = Tensor.linspace(1, 4, 4);
+  let z = TensorMath.log1p(x);
+  let expected = Tensor.create([Math.log1p(1), Math.log1p(2), Math.log1p(3), Math.log1p(4)]);
+  expect(z).toEqual(expected);
+});
+
+test('reciprocol', function () {
+  let x = Tensor.linspace(1, 4, 4);
+  let z = TensorMath.reciprocal(x);
+  let expected = Tensor.create([1 / 1, 1 / 2, 1 / 3, 1 / 4]);
+  expect(z).toEqual(expected);
+});
+
+test('sign', function () {
+  let x = Tensor.create([-1, -2, 1, 2, 0]);
+  let z = TensorMath.sign(x);
+  let expected = Tensor.create([-1, -1, 1, 1, 0]);
+  expect(z).toEqual(expected);
+});
+
 test('acosh', function () {
   let x = Tensor.linspace(1, 4, 4);
   let z = TensorMath.acosh(x);
@@ -91,10 +119,32 @@ test('relu', function () {
   expect(z).toEqual(expected);
 });
 
+test('step', function () {
+  let x = Tensor.create([-1, -2, 1, 2]);
+  let z = TensorMath.step(x);
+  let expected = Tensor.create([0, 0, 1, 1]);
+  expect(z).toEqual(expected);
+});
+
+
+test('square', function () {
+  let x = Tensor.create([-1, -2, 1, 2]);
+  let z = TensorMath.square(x);
+  let expected = Tensor.create([1, 4, 1, 4]);
+  expect(z).toEqual(expected);
+});
+
 test('round', function () {
   let x = Tensor.create([-1.1, -2.1, 1.1, 2.1]);
   let z = TensorMath.round(x);
   let expected = Tensor.create([-1, -2, 1, 2]);
+  expect(z).toEqual(expected);
+});
+
+test('tanh', function () {
+  let x = Tensor.create([-1, -2, 1, 2]);
+  let z = TensorMath.tanh(x);
+  let expected = Tensor.create([Math.tanh(-1), Math.tanh(-2), Math.tanh(1), Math.tanh(2)]);
   expect(z).toEqual(expected);
 });
 
