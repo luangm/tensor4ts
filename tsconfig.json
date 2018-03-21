@@ -4,7 +4,9 @@
     "target": "es5",
     "noImplicitAny": true,
     "outDir": "./dist/",
-    "sourceMap": true
+    "sourceMap": true,
+    "removeComments": true,
+    "lib": ["DOM","ES6","DOM.Iterable","ScriptHost"]
   },
   "exclude": [
     "node_modules"

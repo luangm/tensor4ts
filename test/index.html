@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../dist/tensor4js.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    console.log("A");
+    var c = Tensor.create([[1,2,3]]);
+    let d = Tensor.create(1);
+    let sum = TensorMath.acosh(c);
+    console.log(sum);
+</script>
+</body>
+</html>
