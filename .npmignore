@@ -9,5 +9,6 @@ npm-debug.log
 src
 webpack.config.js
 .babelrc
-tesdocst
+test
 docs
+tsconfig.json
