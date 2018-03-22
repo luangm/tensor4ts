@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "Tensor for JavaScript",
   "main": "dist/tensor4js.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
