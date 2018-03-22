@@ -7,7 +7,7 @@ module.exports = {
     entry: './src/index.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'tensor4js.js',
+        filename: 'index.js',
         publicPath: '/dist/',
         libraryTarget: 'umd'
     },
