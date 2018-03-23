@@ -68,7 +68,7 @@ export default class Tensor {
 
   static create(array: number[][][][]): Tensor;
 
-  static create(array: number | number[] | number[][] | number[][][] | number[][][][]): Tensor {
+  static create(array: any): Tensor {
     return TensorFactory.create(array);
   }
 
