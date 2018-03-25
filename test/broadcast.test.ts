@@ -27,4 +27,5 @@ test('broadcast tensor', function() {
   let z = a.broadcast([3, 2]);
   let expected = Tensor.create([[1, 2], [1, 2], [1, 2]]);
   expect(z).toEqual(expected);
+
 });

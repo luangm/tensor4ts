@@ -22,10 +22,6 @@ export default abstract class ReductionOp extends Operation {
     return false;
   }
 
-  body(a: number, b?: number): number {
-    return a;
-  }
-
   exec(dim?: number): void {
     // nothing
   }

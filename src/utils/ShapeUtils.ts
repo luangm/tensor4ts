@@ -196,4 +196,12 @@ export default class ShapeUtils {
     }
     return true;
   }
+
+  static computeConvOutSize(imageSize: number, kernelSize: number, padSize = 0, stride = 1) {
+      let result = (imageSize - kernelSize + 2 * padSize) / stride + 1;
+      if (result !== Math.floor(result)) {
+          throw new Error('Cannot do conv with these values: imageSize: {' + imageSize + '}, kernelSize: {' + kernelSize + '}');
+      }
+      return result;
+  }
 }

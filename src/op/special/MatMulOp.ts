@@ -20,10 +20,6 @@ export default class MatMulOp extends Operation {
     return true;
   }
 
-  body(a: number, b?: number): number {
-    return 0;
-  }
-
   exec() {
     this._program.exec();
   }

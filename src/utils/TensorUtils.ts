@@ -59,66 +59,8 @@ export default class TensorUtils {
 
       return result;
   }
-  //
-  // static col2im(col, image, kernel, {padWidth = 0, padHeight = 0, strideWidth = 1, strideHeight = 1} = {}) {
-  //
-  //     let numImages = image.shape[0];
-  //     let channels = image.shape[1];
-  //     let height = image.shape[2]; // rows
-  //     let width = image.shape[3]; // cols
-  //
-  //     let numKernels = kernel.shape[0];
-  //     let kernelChannels = kernel.shape[1];
-  //     let kernelHeight = kernel.shape[2]; // rows
-  //     let kernelWidth = kernel.shape[3]; // cols
-  //
-  //     let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, padHeight, strideHeight);
-  //     let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, padWidth, strideWidth);
-  //
-  //     let result = new Tensor({shape: [numImages, channels, height, width]});
-  //     let dataIndex = 0;
-  //
-  //     for (let c = 0; c < kernelChannels; c++) {
-  //         for (let kRow = 0; kRow < kernelHeight; kRow++) {
-  //             for (let kCol = 0; kCol < kernelWidth; kCol++) {
-  //
-  //                 for (let n = 0; n < numImages; n++) {
-  //
-  //                     let inputRow = kRow - padHeight;
-  //                     for (let oR = 0; oR < outputHeight; oR++) {
-  //
-  //                         if (inputRow < 0 || inputRow >= height) {
-  //                             dataIndex += outputWidth;
-  //                             continue;
-  //                         }
-  //
-  //                         let inputCol = kCol - padWidth;
-  //                         for (let oC = 0; oC < outputWidth; oC++) {
-  //                             if (inputCol >= 0 && inputCol < width) {
-  //                                 result.data[n * channels * width * height + c * width * height + inputRow * width + inputCol] += col.data[dataIndex];
-  //                             }
-  //                             dataIndex++;
-  //                             inputCol += strideWidth;
-  //                         }
-  //
-  //                         inputRow += strideHeight;
-  //                     }
-  //                 }
-  //
-  //             }
-  //         }
-  //     }
-  //
-  //     return result;
-  // }
-  //
-  // static computeConv2dOutSize(imageSize, kernelSize, padSize = 0, stride = 1) {
-  //     let result = (imageSize - kernelSize + 2 * padSize) / stride + 1;
-  //     if (result !== Math.floor(result)) {
-  //         throw new Error('Cannot do conv2d with these values: imageSize: {' + imageSize + '}, kernelSize: {' + kernelSize + '}');
-  //     }
-  //     return result;
-  // }
+
+
   //
   // static computeConv2dShape(image, kernel) {
   //     let numImages = image.shape[0];
@@ -161,76 +103,6 @@ export default class TensorUtils {
     }
     return offset;
   }
-
-  // image is a tensor of [channels, rows, cols]
-  // static im2col(image, kernelShape, {padWidth = 0, padHeight = 0, strideWidth = 1, strideHeight = 1} = {}) {
-  //     if (image.rank !== 4) {
-  //         throw new Error('image\'s rank is not 4');
-  //     }
-  //
-  //     if (kernelShape.length !== 4) {
-  //         throw new Error('kernel\'s rank is not 4');
-  //     }
-  //
-  //     let numImages = image.shape[0];
-  //     let channels = image.shape[1];
-  //     let height = image.shape[2]; // rows
-  //     let width = image.shape[3]; // cols
-  //
-  //     let numKernels = kernelShape[0];
-  //     let kernelChannels = kernelShape[1];
-  //     let kernelHeight = kernelShape[2]; // rows
-  //     let kernelWidth = kernelShape[3]; // cols
-  //
-  //     if (channels !== kernelChannels) {
-  //         throw new Error('image channels (shape[1]) must equal kernel channels (shape[1])');
-  //     }
-  //
-  //     let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, padHeight, strideHeight);
-  //     let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, padWidth, strideWidth);
-  //
-  //     let resultHeight = kernelChannels * kernelHeight * kernelWidth;
-  //     let resultWidth = numImages * outputHeight * outputWidth;
-  //
-  //     let result = new Tensor({shape: [resultHeight, resultWidth]});
-  //
-  //     let resultIndex = 0;
-  //
-  //     for (let c = 0; c < kernelChannels; c++) {
-  //         for (let kRow = 0; kRow < kernelHeight; kRow++) {
-  //             for (let kCol = 0; kCol < kernelWidth; kCol++) {
-  //
-  //
-  //                 for (let n = 0; n < numImages; n++) {
-  //
-  //                     let inputRow = kRow - padHeight;
-  //                     for (let oR = 0; oR < outputHeight; oR++) {
-  //                         if (inputRow >= 0 && inputRow < height) {
-  //                             let inputCol = kCol - padWidth;
-  //                             for (let oC = 0; oC < outputWidth; oC++) {
-  //                                 if (inputCol >= 0 && inputCol < width) {
-  //                                     result.data[resultIndex++] = image.get([n, c, inputRow, inputCol]);//.data[inputRow * width + inputCol];
-  //                                 } else {
-  //                                     result.data[resultIndex++] = 0;
-  //                                 }
-  //                                 inputCol += strideWidth;
-  //                             }
-  //                         } else {
-  //                             for (let oC = 0; oC < outputWidth; oC++) {
-  //                                 result.data[resultIndex++] = 0;
-  //                             }
-  //                         }
-  //                         inputRow += strideHeight;
-  //                     }
-  //
-  //                 }
-  //
-  //             }
-  //         }
-  //     }
-  //
-  //     return result;
-  // }
 
   static reshape(tensor: Tensor, newShape: number[]): Tensor {
     if (TensorUtils.shapeEquals(tensor.shape, newShape)) {

@@ -14,10 +14,6 @@ export default abstract class IndexOp extends Operation {
     return this._dim;
   }
 
-  body(a: number, b?: number): number {
-    return a;
-  }
-
   exec(dim?: number): void {
     // nothing
   }

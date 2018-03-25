@@ -1,10 +1,12 @@
 import Shape from "./Shape";
-import TensorFactory from "./utils/TensorFactory";
-import TensorUtils from "./utils/TensorUtils";
 import TensorMath from "./TensorMath";
+import TensorFactory from "./utils/TensorFactory";
+import TensorFormat from "./utils/TensorFormat";
+import TensorUtils from "./utils/TensorUtils";
 
 export default class Tensor {
 
+  static tensorFormat: TensorFormat = new TensorFormat();
   private _data: Float32Array;
   private _offset: number;
   private _shape: Shape;
@@ -45,6 +47,10 @@ export default class Tensor {
 
   get shape() {
     return this._shape.shape;
+  }
+
+  get slices() {
+    return this.shape[0];
   }
 
   get strides() {
@@ -120,6 +126,11 @@ export default class Tensor {
     return TensorMath.fill(this, scalar, this);
   }
 
+  get(indices: number[]): number {
+    let offset = this._shape.getOffset(indices) + this.offset;
+    return this._data[offset];
+  }
+
   matmul(other: Tensor): Tensor {
     return TensorMath.matmul(this, other);
   }
@@ -140,7 +151,27 @@ export default class Tensor {
     return TensorUtils.reshape(this, shape);
   }
 
+  slice(num: number): Tensor {
+    let offset = this.offset;
+    let newShape = [];
+    let newStrides = [];
+
+    offset += num * this.strides[0];
+
+    for (let i = 1; i < this.rank; i++) {
+      newShape.push(this.shape[i]);
+      newStrides.push(this.strides[i]);
+    }
+
+    let shape = new Shape(newShape, newStrides, this._shape.order);
+    return new Tensor(this._data, shape, offset);
+  }
+
   subtract(other: Tensor): Tensor {
     return TensorMath.subtract(this, other);
+  }
+
+  toString() {
+    return Tensor.tensorFormat.format(this);
   }
 }

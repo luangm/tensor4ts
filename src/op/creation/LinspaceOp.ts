@@ -20,10 +20,6 @@ export default class LinspaceOp extends Operation {
     return true;
   }
 
-  body(a: number, b?: number): number {
-    return 0;
-  }
-
   exec() {
     let result = this.result.data;
     let val = this._start;

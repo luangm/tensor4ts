@@ -1,56 +1,58 @@
 import Executor from "./executor/Executor";
+import {Col2ImOptions, default as Col2ImOp} from "./op/cnn/Col2ImOp";
+import {default as Im2ColOp, Im2ColOptions} from "./op/cnn/Im2ColOp";
+import ArangeOp from "./op/creation/ArangeOp";
+import LinspaceOp from "./op/creation/LinspaceOp";
+import ArgMaxOp from "./op/index/ArgMaxOp";
+import ArgMinOp from "./op/index/ArgMinOp";
 import AddOp from "./op/pairwise/AddOp";
-import Tensor from "./Tensor";
-import ShapeUtils from "./utils/ShapeUtils";
-import AcoshOp from "./op/transform/AcoshOp";
-import AbsOp from "./op/transform/AbsOp";
-import AcosOp from "./op/transform/AcosOp";
-import AsinOp from "./op/transform/AsinOp";
-import AsinhOp from "./op/transform/AsinhOp";
-import AtanOp from "./op/transform/AtanOp";
-import AtanhOp from "./op/transform/AtanhOp";
-import CosOp from "./op/transform/CosOp";
-import CoshOp from "./op/transform/CoshOp";
 import DivideOp from "./op/pairwise/DivideOp";
-import EluOp from "./op/transform/EluOp";
-import ExpOp from "./op/transform/ExpOp";
-import Expm1Op from "./op/transform/Expm1Op";
-import LogOp from "./op/transform/LogOp";
-import Log1pOp from "./op/transform/Log1pOp";
 import MaxOp from "./op/pairwise/MaxOp";
 import MinOp from "./op/pairwise/MinOp";
 import ModOp from "./op/pairwise/ModOp";
 import MultiplyOp from "./op/pairwise/MultiplyOp";
+import SubtractOp from "./op/pairwise/SubtractOp";
+import ReduceMaxOp from "./op/reduction/ReduceMaxOp";
+import ReduceMeanOp from "./op/reduction/ReduceMeanOp";
+import ReduceMinOp from "./op/reduction/ReduceMinOp";
+import ReduceProdOp from "./op/reduction/ReduceProdOp";
+import ReduceSumOp from "./op/reduction/ReduceSumOp";
+import MatMulOp from "./op/special/MatMulOp";
+import AbsOp from "./op/transform/AbsOp";
+import AcoshOp from "./op/transform/AcoshOp";
+import AcosOp from "./op/transform/AcosOp";
+import AsinhOp from "./op/transform/AsinhOp";
+import AsinOp from "./op/transform/AsinOp";
+import AtanhOp from "./op/transform/AtanhOp";
+import AtanOp from "./op/transform/AtanOp";
+import CoshOp from "./op/transform/CoshOp";
+import CosOp from "./op/transform/CosOp";
+import EluOp from "./op/transform/EluOp";
+import Expm1Op from "./op/transform/Expm1Op";
+import ExpOp from "./op/transform/ExpOp";
+import Log1pOp from "./op/transform/Log1pOp";
+import LogOp from "./op/transform/LogOp";
 import NegateOp from "./op/transform/NegateOp";
+import RandomOp from "./op/transform/RandomOp";
 import ReciprocalOp from "./op/transform/ReciprocalOp";
 import ReluOp from "./op/transform/ReluOp";
 import RoundOp from "./op/transform/RoundOp";
 import RsqrtOp from "./op/transform/RsqrtOp";
-import SigmoidOp from "./op/transform/SigmoidOp";
 import SigmoidGradOp from "./op/transform/SigmoidGradOp";
+import SigmoidOp from "./op/transform/SigmoidOp";
 import SignOp from "./op/transform/SignOp";
-import SinOp from "./op/transform/SinOp";
 import SinhOp from "./op/transform/SinhOp";
-import SqrtOp from "./op/transform/SqrtOp";
+import SinOp from "./op/transform/SinOp";
+import SetOp from "./op/transform/special/SetOp";
 import SqrtGradOp from "./op/transform/SqrtGradOp";
+import SqrtOp from "./op/transform/SqrtOp";
 import SquareOp from "./op/transform/SquareOp";
 import StepOp from "./op/transform/StepOp";
-import SubtractOp from "./op/pairwise/SubtractOp";
-import TanOp from "./op/transform/TanOp";
 import TanGradOp from "./op/transform/TanGradOp";
 import TanhOp from "./op/transform/TanhOp";
-import SetOp from "./op/transform/special/SetOp";
-import RandomOp from "./op/transform/RandomOp";
-import ArangeOp from "./op/creation/ArangeOp";
-import LinspaceOp from "./op/creation/LinspaceOp";
-import ReduceSumOp from "./op/reduction/ReduceSumOp";
-import ReduceProdOp from "./op/reduction/ReduceProdOp";
-import ReduceMinOp from "./op/reduction/ReduceMinOp";
-import ReduceMeanOp from "./op/reduction/ReduceMeanOp";
-import ReduceMaxOp from "./op/reduction/ReduceMaxOp";
-import MatMulOp from "./op/special/MatMulOp";
-import ArgMaxOp from "./op/index/ArgMaxOp";
-import ArgMinOp from "./op/index/ArgMinOp";
+import TanOp from "./op/transform/TanOp";
+import Tensor from "./Tensor";
+import ShapeUtils from "./utils/ShapeUtils";
 
 export default class TensorMath {
 
@@ -161,6 +163,12 @@ export default class TensorMath {
     return result;
   }
 
+  static col2im(base: Tensor, options: Col2ImOptions): Tensor {
+    let result = Tensor.zeros([options.imageNum, options.imageChannel, options.imageHeight, options.imageWidth]);
+    Executor.exec(new Col2ImOp(base, null, result, options));
+    return result;
+  }
+
   // TODO
   static conv2d(image: Tensor, kernel: Tensor): Tensor {
     return null;
@@ -222,12 +230,6 @@ export default class TensorMath {
     return result;
   }
 
-  static fill(base: Tensor, scalar: number, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SetOp(base, null, result, scalar));
-    return result;
-  }
-
   // static logSumExp(base, dim = -1) {
   //   if (dim < 0) {
   //     dim += base.rank;
@@ -240,15 +242,43 @@ export default class TensorMath {
   //   return TensorMath.add(log, max);
   // }
 
-  static linspace(base: Tensor, start: number, stop: number = 0, num: number = 1, result?: Tensor): Tensor {
+  static fill(base: Tensor, scalar: number, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
+    Executor.exec(new SetOp(base, null, result, scalar));
     return result;
   }
 
-  static log(base: Tensor, result?: Tensor): Tensor {
+  static im2col(base: Tensor, options: Im2ColOptions): Tensor {
+    let imageNum = base.shape[0];
+    let imageChannel = base.shape[1];
+    let imageHeight = base.shape[2]; // rows
+    let imageWidth = base.shape[3]; // cols
+
+    let kernelNum = options.kernelNum;
+    let kernelChannel = options.kernelChannel;
+    let kernelHeight = options.kernelHeight; // rows
+    let kernelWidth = options.kernelWidth; // cols
+
+    let padHeight = options.padHeight;
+    let padWidth = options.padWidth;
+    let strideHeight = options.strideHeight;
+    let strideWidth = options.strideWidth;
+
+    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
+    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
+    let resultHeight = kernelChannel * kernelHeight * kernelWidth;
+    let resultWidth = imageNum * outputHeight * outputWidth;
+
+    let result = Tensor.zeros([resultHeight, resultWidth]);
+
+    Executor.exec(new Im2ColOp(base, null, result, options));
+
+    return result;
+  }
+
+  static linspace(base: Tensor, start: number, stop: number = 0, num: number = 1, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LogOp(base, null, result));
+    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
     return result;
   }
 
@@ -281,6 +311,12 @@ export default class TensorMath {
   //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
   //   return result;
   // }
+
+  static log(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new LogOp(base, null, result));
+    return result;
+  }
 
   static log1p(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -451,19 +487,6 @@ export default class TensorMath {
     return result;
   }
 
-  // TODO
-  static softmax(base: Tensor, dim: number = -1): Tensor {
-    // if (dim < 0) {
-    //   dim += base.rank;
-    // }
-    // let max = TensorMath.reduceMax(base, dim);
-    // let subtract = TensorMath.subtract(base, max);
-    // let exp = TensorMath.exp(subtract);
-    // let sum = TensorMath.reduceSum(exp, dim);
-    // return TensorMath.divide(exp, sum);
-    return null;
-  }
-
   // static softmax2(base, dim = -1, result) {
   //   if (dim < 0) {
   //     dim += base.rank;
@@ -502,6 +525,19 @@ export default class TensorMath {
   //   let subtract = TensorMath.subtract(grad, sum); // Sum will broadcast
   //   return TensorMath.multiply(subtract, softmax);
   // }
+
+  // TODO
+  static softmax(base: Tensor, dim: number = -1): Tensor {
+    // if (dim < 0) {
+    //   dim += base.rank;
+    // }
+    // let max = TensorMath.reduceMax(base, dim);
+    // let subtract = TensorMath.subtract(base, max);
+    // let exp = TensorMath.exp(subtract);
+    // let sum = TensorMath.reduceSum(exp, dim);
+    // return TensorMath.divide(exp, sum);
+    return null;
+  }
 
   static sqrt(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);

@@ -28,9 +28,10 @@ export default abstract class Operation {
     return this._result;
   }
 
-  abstract body(a: number, b?: number): number;
+  body(a: number, b?: number): number {
+    return a;
+  }
 
   abstract exec(dim?: number): void;
-
 
 }
