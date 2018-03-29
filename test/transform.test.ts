@@ -126,7 +126,6 @@ test('step', function () {
   expect(z).toEqual(expected);
 });
 
-
 test('square', function () {
   let x = Tensor.create([-1, -2, 1, 2]);
   let z = TensorMath.square(x);
@@ -134,10 +133,60 @@ test('square', function () {
   expect(z).toEqual(expected);
 });
 
+test('power 2', function () {
+  let x = Tensor.create([-1, -2, 1, 2]);
+  let z = TensorMath.pow(x, 2);
+  let expected = Tensor.create([1, 4, 1, 4]);
+  expect(z).toEqual(expected);
+});
+
+test('power 3', function () {
+  let x = Tensor.create([-1, -2, 1, 2]);
+  let z = TensorMath.pow(x, 3);
+  let expected = Tensor.create([-1, -8, 1, 8]);
+  expect(z).toEqual(expected);
+});
+
+test('floor', function () {
+  let x = Tensor.create([-1.1, -2.1, 1.1, 2.1]);
+  let z = TensorMath.floor(x);
+  let expected = Tensor.create([-2, -3, 1, 2]);
+  expect(z).toEqual(expected);
+});
+
+
+test('ceil', function () {
+  let x = Tensor.create([-1.1, -2.1, 1.1, 2.1]);
+  let z = TensorMath.ceil(x);
+  let expected = Tensor.create([-1, -2, 2, 3]);
+  expect(z).toEqual(expected);
+});
+
 test('round', function () {
   let x = Tensor.create([-1.1, -2.1, 1.1, 2.1]);
   let z = TensorMath.round(x);
   let expected = Tensor.create([-1, -2, 1, 2]);
+  expect(z).toEqual(expected);
+});
+
+test('asin', function () {
+  let x = Tensor.create([1, 2, 3]);
+  let z = TensorMath.asin(x);
+  let expected = Tensor.create([Math.asin(1), Math.asin(2), Math.asin(3)]);
+  expect(z).toEqual(expected);
+});
+
+test('acos', function () {
+  let x = Tensor.create([1, 2, 3]);
+  let z = TensorMath.acos(x);
+  let expected = Tensor.create([Math.acos(1), Math.acos(2), Math.acos(3)]);
+  expect(z).toEqual(expected);
+});
+
+test('atan', function () {
+  let x = Tensor.create([1, 2, 3]);
+  let z = TensorMath.atan(x);
+  let expected = Tensor.create([Math.atan(1), Math.atan(2), Math.atan(3)]);
   expect(z).toEqual(expected);
 });
 
@@ -154,3 +203,18 @@ test('sigmoid', function () {
   let expected = Tensor.create([1 / (1 + Math.exp(-1)), 1 / (1 + Math.exp(-2)), 1 / (1 + Math.exp(-3))]);
   expect(z).toEqual(expected);
 });
+
+test('softplus', function () {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.softplus(x);
+  let expected = Tensor.create([
+    [softplus(1), softplus(2), softplus(3)],
+    [softplus(4), softplus(5), softplus(6)]
+  ]);
+  expect(z).toEqual(expected);
+  console.log(z.toString());
+});
+
+function softplus(x: number): number {
+  return Math.log1p(Math.exp(x));
+}

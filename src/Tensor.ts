@@ -8,17 +8,21 @@ export default class Tensor {
 
   static tensorFormat: TensorFormat = new TensorFormat();
   private _data: Float32Array;
-  private _offset: number;
-  private _shape: Shape;
-
-  constructor(data: Float32Array, shape: Shape, offset = 0) {
-    this._data = data;
-    this._shape = shape;
-    this._offset = offset;
-  }
 
   get data() {
     return this._data;
+  }
+
+  private _offset: number;
+
+  get offset() {
+    return this._offset;
+  }
+
+  private _shape: Shape;
+
+  get shape() {
+    return this._shape.shape;
   }
 
   get isMatrix() {
@@ -37,16 +41,8 @@ export default class Tensor {
     return this._shape.length;
   }
 
-  get offset() {
-    return this._offset;
-  }
-
   get rank() {
     return this._shape.rank;
-  }
-
-  get shape() {
-    return this._shape.shape;
   }
 
   get slices() {
@@ -55,6 +51,12 @@ export default class Tensor {
 
   get strides() {
     return this._shape.strides;
+  }
+
+  constructor(data: Float32Array, shape: Shape, offset = 0) {
+    this._data = data;
+    this._shape = shape;
+    this._offset = offset;
   }
 
   /**
@@ -78,7 +80,7 @@ export default class Tensor {
     return TensorFactory.create(array);
   }
 
-  static linspace(start: number, stop: number, num: number = 1) {
+  static linspace(start: number, stop: number, num: number) {
     return TensorFactory.linspace(start, stop, num);
   }
 
@@ -98,6 +100,14 @@ export default class Tensor {
     return TensorFactory.zeros(shape);
   }
 
+  abs(): Tensor {
+    return TensorMath.abs(this);
+  }
+
+  absi(): Tensor {
+    return TensorMath.abs(this, this);
+  }
+
   add(other: Tensor): Tensor {
     return TensorMath.add(this, other);
   }
@@ -108,6 +118,14 @@ export default class Tensor {
 
   broadcast(shape: number[]): Tensor {
     return TensorUtils.broadcastTensor(this, shape);
+  }
+
+  ceil(): Tensor {
+    return TensorMath.ceil(this);
+  }
+
+  ceili(): Tensor {
+    return TensorMath.ceil(this, this);
   }
 
   divide(other: Tensor): Tensor {
@@ -124,6 +142,14 @@ export default class Tensor {
 
   filli(scalar: number): Tensor {
     return TensorMath.fill(this, scalar, this);
+  }
+
+  floor(): Tensor {
+    return TensorMath.floor(this);
+  }
+
+  floori(): Tensor {
+    return TensorMath.floor(this, this);
   }
 
   get(indices: number[]): number {
@@ -147,8 +173,20 @@ export default class Tensor {
     return TensorMath.negate(this);
   }
 
+  negatei() {
+    return TensorMath.negate(this, this);
+  }
+
   reshape(shape: number[]): Tensor {
     return TensorUtils.reshape(this, shape);
+  }
+
+  round(): Tensor {
+    return TensorMath.round(this);
+  }
+
+  roundi(): Tensor {
+    return TensorMath.round(this, this);
   }
 
   slice(num: number): Tensor {

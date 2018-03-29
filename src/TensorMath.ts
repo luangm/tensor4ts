@@ -25,14 +25,17 @@ import AsinhOp from "./op/transform/AsinhOp";
 import AsinOp from "./op/transform/AsinOp";
 import AtanhOp from "./op/transform/AtanhOp";
 import AtanOp from "./op/transform/AtanOp";
+import CeilOp from "./op/transform/CeilOp";
 import CoshOp from "./op/transform/CoshOp";
 import CosOp from "./op/transform/CosOp";
 import EluOp from "./op/transform/EluOp";
 import Expm1Op from "./op/transform/Expm1Op";
 import ExpOp from "./op/transform/ExpOp";
+import FloorOp from "./op/transform/FloorOp";
 import Log1pOp from "./op/transform/Log1pOp";
 import LogOp from "./op/transform/LogOp";
 import NegateOp from "./op/transform/NegateOp";
+import PowerOp from "./op/transform/PowerOp";
 import RandomOp from "./op/transform/RandomOp";
 import ReciprocalOp from "./op/transform/ReciprocalOp";
 import ReluOp from "./op/transform/ReluOp";
@@ -43,6 +46,7 @@ import SigmoidOp from "./op/transform/SigmoidOp";
 import SignOp from "./op/transform/SignOp";
 import SinhOp from "./op/transform/SinhOp";
 import SinOp from "./op/transform/SinOp";
+import SoftplusOp from "./op/transform/SoftplusOp";
 import SetOp from "./op/transform/special/SetOp";
 import SqrtGradOp from "./op/transform/SqrtGradOp";
 import SqrtOp from "./op/transform/SqrtOp";
@@ -163,6 +167,12 @@ export default class TensorMath {
     return result;
   }
 
+  static ceil(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new CeilOp(base, null, result));
+    return result;
+  }
+
   static col2im(base: Tensor, options: Col2ImOptions): Tensor {
     let result = Tensor.zeros([options.imageNum, options.imageChannel, options.imageHeight, options.imageWidth]);
     Executor.exec(new Col2ImOp(base, null, result, options));
@@ -224,12 +234,6 @@ export default class TensorMath {
     return result;
   }
 
-  static expm1(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new Expm1Op(base, null, result));
-    return result;
-  }
-
   // static logSumExp(base, dim = -1) {
   //   if (dim < 0) {
   //     dim += base.rank;
@@ -242,43 +246,21 @@ export default class TensorMath {
   //   return TensorMath.add(log, max);
   // }
 
+  static expm1(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new Expm1Op(base, null, result));
+    return result;
+  }
+
   static fill(base: Tensor, scalar: number, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new SetOp(base, null, result, scalar));
     return result;
   }
 
-  static im2col(base: Tensor, options: Im2ColOptions): Tensor {
-    let imageNum = base.shape[0];
-    let imageChannel = base.shape[1];
-    let imageHeight = base.shape[2]; // rows
-    let imageWidth = base.shape[3]; // cols
-
-    let kernelNum = options.kernelNum;
-    let kernelChannel = options.kernelChannel;
-    let kernelHeight = options.kernelHeight; // rows
-    let kernelWidth = options.kernelWidth; // cols
-
-    let padHeight = options.padHeight;
-    let padWidth = options.padWidth;
-    let strideHeight = options.strideHeight;
-    let strideWidth = options.strideWidth;
-
-    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
-    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
-    let resultHeight = kernelChannel * kernelHeight * kernelWidth;
-    let resultWidth = imageNum * outputHeight * outputWidth;
-
-    let result = Tensor.zeros([resultHeight, resultWidth]);
-
-    Executor.exec(new Im2ColOp(base, null, result, options));
-
-    return result;
-  }
-
-  static linspace(base: Tensor, start: number, stop: number = 0, num: number = 1, result?: Tensor): Tensor {
+  static floor(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
+    Executor.exec(new FloorOp(base, null, result));
     return result;
   }
 
@@ -311,6 +293,40 @@ export default class TensorMath {
   //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
   //   return result;
   // }
+
+  static im2col(base: Tensor, options: Im2ColOptions): Tensor {
+    let imageNum = base.shape[0];
+    let imageChannel = base.shape[1];
+    let imageHeight = base.shape[2]; // rows
+    let imageWidth = base.shape[3]; // cols
+
+    let kernelNum = options.kernelNum;
+    let kernelChannel = options.kernelChannel;
+    let kernelHeight = options.kernelHeight; // rows
+    let kernelWidth = options.kernelWidth; // cols
+
+    let padHeight = options.padHeight;
+    let padWidth = options.padWidth;
+    let strideHeight = options.strideHeight;
+    let strideWidth = options.strideWidth;
+
+    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
+    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
+    let resultHeight = kernelChannel * kernelHeight * kernelWidth;
+    let resultWidth = imageNum * outputHeight * outputWidth;
+
+    let result = Tensor.zeros([resultHeight, resultWidth]);
+
+    Executor.exec(new Im2ColOp(base, null, result, options));
+
+    return result;
+  }
+
+  static linspace(base: Tensor, start: number, stop: number = 0, num: number, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
+    return result;
+  }
 
   static log(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -364,6 +380,12 @@ export default class TensorMath {
   static negate(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new NegateOp(base, null, result));
+    return result;
+  }
+
+  static pow(base: Tensor, power: number = 1, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new PowerOp(base, null, result, power));
     return result;
   }
 
@@ -475,27 +497,6 @@ export default class TensorMath {
     return result;
   }
 
-  static sin(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SinOp(base, null, result));
-    return result;
-  }
-
-  static sinh(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SinhOp(base, null, result));
-    return result;
-  }
-
-  // static softmax2(base, dim = -1, result) {
-  //   if (dim < 0) {
-  //     dim += base.rank;
-  //   }
-  //   result = result || Tensor.zeros(base.shape);
-  //   Executor.execAtDim(new SoftmaxOp(base, null, result), dim);
-  //   return result;
-  // }
-
   // static softmaxCrossEntropyGrad(labels, logits) {
   //   let softmax = TensorMath(logits);
   //   return TensorMath.subtract(softmax, labels);
@@ -526,17 +527,33 @@ export default class TensorMath {
   //   return TensorMath.multiply(subtract, softmax);
   // }
 
-  // TODO
+  static sin(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new SinOp(base, null, result));
+    return result;
+  }
+
+  static sinh(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new SinhOp(base, null, result));
+    return result;
+  }
+
   static softmax(base: Tensor, dim: number = -1): Tensor {
-    // if (dim < 0) {
-    //   dim += base.rank;
-    // }
-    // let max = TensorMath.reduceMax(base, dim);
-    // let subtract = TensorMath.subtract(base, max);
-    // let exp = TensorMath.exp(subtract);
-    // let sum = TensorMath.reduceSum(exp, dim);
-    // return TensorMath.divide(exp, sum);
-    return null;
+    if (dim < 0) {
+      dim += base.rank;
+    }
+    let max = TensorMath.reduceMax(base, dim, true);
+    let subtract = TensorMath.subtract(base, max);
+    let exp = TensorMath.exp(subtract);
+    let sum = TensorMath.reduceSum(exp, dim, true);
+    return TensorMath.divide(exp, sum);
+  }
+
+  static softplus(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new SoftplusOp(base, null, result));
+    return result;
   }
 
   static sqrt(base: Tensor, result?: Tensor): Tensor {

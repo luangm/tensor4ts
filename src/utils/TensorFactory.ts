@@ -50,7 +50,7 @@ export default class TensorFactory {
     return new Tensor(data, shape);
   }
 
-  static linspace(start: number, stop: number, num: number = 2) {
+  static linspace(start: number, stop: number, num: number) {
       let tensor = Tensor.zeros([num]);
       return TensorMath.linspace(tensor, start, stop, num);
   }

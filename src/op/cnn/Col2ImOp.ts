@@ -45,10 +45,10 @@ export default class Col2ImOp extends Operation {
     let kernelHeight = this.options.kernelHeight; // rows
     let kernelWidth = this.options.kernelWidth; // cols
 
-    let padHeight = this.options.padHeight;
-    let padWidth = this.options.padWidth;
-    let strideHeight = this.options.strideHeight;
-    let strideWidth = this.options.strideWidth;
+    let padHeight = this.options.padHeight || 0;
+    let padWidth = this.options.padWidth || 0;
+    let strideHeight = this.options.strideHeight || 1;
+    let strideWidth = this.options.strideWidth || 1;
 
     let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
     let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);

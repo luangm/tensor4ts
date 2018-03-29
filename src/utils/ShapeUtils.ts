@@ -15,7 +15,7 @@ export default class ShapeUtils {
       let right = bIndex >= 0 ? b[bIndex] : 1;
 
       if (left !== 1 && right !== 1 && left !== right) {
-        throw new Error('cannot broadcast shapes. not compatible');
+        throw new Error('cannot broadcast shapes.' + a + ", " + b + ' not compatible');
       }
 
       result[dim] = Math.max(left, right);
