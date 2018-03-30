@@ -177,6 +177,22 @@ export default class Tensor {
     return TensorMath.negate(this, this);
   }
 
+  reciprocal(): Tensor {
+    return TensorMath.reciprocal(this);
+  }
+
+  reciprocalGrad(): Tensor {
+    return TensorMath.reciprocalGrad(this);
+  }
+
+  reciprocalGradi(): Tensor {
+    return TensorMath.reciprocalGrad(this, this);
+  }
+
+  reciprocali(): Tensor {
+    return TensorMath.reciprocal(this, this);
+  }
+
   reshape(shape: number[]): Tensor {
     return TensorUtils.reshape(this, shape);
   }

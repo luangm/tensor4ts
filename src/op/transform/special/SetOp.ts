@@ -5,8 +5,8 @@ export default class SetOp extends TransformOp {
 
   private _scalar: number;
 
-  constructor(input: Tensor, other: Tensor, result: Tensor, scalar: number) {
-    super(input, other, result);
+  constructor(input: Tensor, result: Tensor, scalar: number) {
+    super(input, result);
     this._scalar = scalar;
   }
 

@@ -8,8 +8,8 @@ export default class PowerOp extends TransformOp {
     return this._power;
   }
 
-  constructor(input: Tensor, other: Tensor, result: Tensor, power: number = 1) {
-    super(input, other, result);
+  constructor(input: Tensor, result: Tensor, power: number = 1) {
+    super(input, result);
     this._power = power;
   }
 

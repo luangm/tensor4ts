@@ -42,6 +42,7 @@ import LogOp from "./op/transform/LogOp";
 import NegateOp from "./op/transform/NegateOp";
 import PowerOp from "./op/transform/PowerOp";
 import RandomOp from "./op/transform/RandomOp";
+import ReciprocalGradOp from "./op/transform/ReciprocalGradOp";
 import ReciprocalOp from "./op/transform/ReciprocalOp";
 import ReluOp from "./op/transform/ReluOp";
 import RoundOp from "./op/transform/RoundOp";
@@ -58,6 +59,7 @@ import SqrtOp from "./op/transform/SqrtOp";
 import SquareOp from "./op/transform/SquareOp";
 import StepOp from "./op/transform/StepOp";
 import TanGradOp from "./op/transform/TanGradOp";
+import TanhGradOp from "./op/transform/TanhGradOp";
 import TanhOp from "./op/transform/TanhOp";
 import TanOp from "./op/transform/TanOp";
 import Tensor from "./Tensor";
@@ -67,19 +69,19 @@ export default class TensorMath {
 
   static abs(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AbsOp(base, null, result));
+    Executor.exec(new AbsOp(base, result));
     return result;
   }
 
   static acos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AcosOp(base, null, result));
+    Executor.exec(new AcosOp(base, result));
     return result;
   }
 
   static acosh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AcoshOp(base, null, result));
+    Executor.exec(new AcoshOp(base, result));
     return result;
   }
 
@@ -133,19 +135,19 @@ export default class TensorMath {
 
   static asin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AsinOp(base, null, result));
+    Executor.exec(new AsinOp(base, result));
     return result;
   }
 
   static asinh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AsinhOp(base, null, result));
+    Executor.exec(new AsinhOp(base, result));
     return result;
   }
 
   static atan(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AtanOp(base, null, result));
+    Executor.exec(new AtanOp(base, result));
     return result;
   }
 
@@ -168,13 +170,13 @@ export default class TensorMath {
 
   static atanh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AtanhOp(base, null, result));
+    Executor.exec(new AtanhOp(base, result));
     return result;
   }
 
   static ceil(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CeilOp(base, null, result));
+    Executor.exec(new CeilOp(base, result));
     return result;
   }
 
@@ -211,13 +213,13 @@ export default class TensorMath {
 
   static cos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CosOp(base, null, result));
+    Executor.exec(new CosOp(base, result));
     return result;
   }
 
   static cosh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CoshOp(base, null, result));
+    Executor.exec(new CoshOp(base, result));
     return result;
   }
 
@@ -229,31 +231,31 @@ export default class TensorMath {
 
   static elu(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new EluOp(base, null, result));
+    Executor.exec(new EluOp(base, result));
     return result;
   }
 
   static exp(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new ExpOp(base, null, result));
+    Executor.exec(new ExpOp(base, result));
     return result;
   }
 
   static expm1(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new Expm1Op(base, null, result));
+    Executor.exec(new Expm1Op(base, result));
     return result;
   }
 
   static fill(base: Tensor, scalar: number, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SetOp(base, null, result, scalar));
+    Executor.exec(new SetOp(base, result, scalar));
     return result;
   }
 
   static floor(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new FloorOp(base, null, result));
+    Executor.exec(new FloorOp(base, result));
     return result;
   }
 
@@ -315,35 +317,23 @@ export default class TensorMath {
   //   return result;
   // }
 
-  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
-  static pNorm(base: Tensor, p: number = 2, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new PNormOp(base, result, p, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
   static infNorm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
     ReductionExecutor.exec(new InfNormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
+
+  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }
@@ -371,13 +361,13 @@ export default class TensorMath {
 
   static log(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LogOp(base, null, result));
+    Executor.exec(new LogOp(base, result));
     return result;
   }
 
   static log1p(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new Log1pOp(base, null, result));
+    Executor.exec(new Log1pOp(base, result));
     return result;
   }
 
@@ -420,25 +410,43 @@ export default class TensorMath {
 
   static negate(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new NegateOp(base, null, result));
+    Executor.exec(new NegateOp(base, result));
     return result;
+  }
+
+  static pNorm(base: Tensor, p: number = 2, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new PNormOp(base, result, p, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
   }
 
   static pow(base: Tensor, power: number = 1, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new PowerOp(base, null, result, power));
+    Executor.exec(new PowerOp(base, result, power));
     return result;
   }
 
   static rand(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new RandomOp(base, null, result));
+    Executor.exec(new RandomOp(base, result));
     return result;
   }
 
   static reciprocal(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new ReciprocalOp(base, null, result));
+    Executor.exec(new ReciprocalOp(base, result));
+    return result;
+  }
+
+  static reciprocalGrad(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new ReciprocalGradOp(base, result));
     return result;
   }
 
@@ -532,37 +540,37 @@ export default class TensorMath {
 
   static relu(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new ReluOp(base, null, result));
+    Executor.exec(new ReluOp(base, result));
     return result;
   }
 
   static round(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new RoundOp(base, null, result));
+    Executor.exec(new RoundOp(base, result));
     return result;
   }
 
   static rsqrt(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new RsqrtOp(base, null, result));
+    Executor.exec(new RsqrtOp(base, result));
     return result;
   }
 
   static sigmoid(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SigmoidOp(base, null, result));
+    Executor.exec(new SigmoidOp(base, result));
     return result;
   }
 
   static sigmoidGrad(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SigmoidGradOp(base, null, result));
+    Executor.exec(new SigmoidGradOp(base, result));
     return result;
   }
 
   static sign(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SignOp(base, null, result));
+    Executor.exec(new SignOp(base, result));
     return result;
   }
 
@@ -598,13 +606,13 @@ export default class TensorMath {
 
   static sin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SinOp(base, null, result));
+    Executor.exec(new SinOp(base, result));
     return result;
   }
 
   static sinh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SinhOp(base, null, result));
+    Executor.exec(new SinhOp(base, result));
     return result;
   }
 
@@ -621,31 +629,31 @@ export default class TensorMath {
 
   static softplus(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SoftplusOp(base, null, result));
+    Executor.exec(new SoftplusOp(base, result));
     return result;
   }
 
   static sqrt(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SqrtOp(base, null, result));
+    Executor.exec(new SqrtOp(base, result));
     return result;
   }
 
   static sqrtGrad(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SqrtGradOp(base, null, result));
+    Executor.exec(new SqrtGradOp(base, result));
     return result;
   }
 
   static square(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SquareOp(base, null, result));
+    Executor.exec(new SquareOp(base, result));
     return result;
   }
 
   static step(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new StepOp(base, null, result));
+    Executor.exec(new StepOp(base, result));
     return result;
   }
 
@@ -663,19 +671,25 @@ export default class TensorMath {
 
   static tan(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new TanOp(base, null, result));
+    Executor.exec(new TanOp(base, result));
     return result;
   }
 
   static tanGrad(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new TanGradOp(base, null, result));
+    Executor.exec(new TanGradOp(base, result));
     return result;
   }
 
   static tanh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new TanhOp(base, null, result));
+    Executor.exec(new TanhOp(base, result));
+    return result;
+  }
+
+  static tanhGrad(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new TanhGradOp(base, result));
     return result;
   }
 
