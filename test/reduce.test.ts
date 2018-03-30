@@ -233,3 +233,140 @@ test('reduceProd 3d all', function() {
 
   expect(z).toEqual(expected);
 });
+
+test('reduce logsumexp', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.reduceLogSumExp(x);
+  // console.log(z.toString());
+  let expected = Tensor.create(Math.log(Math.exp(1)+ Math.exp(2)+ Math.exp(3)+ Math.exp(4)+ Math.exp(5)+ Math.exp(6)));
+
+  expect(z).toEqual(expected);
+});
+
+test('reduce logsumexp keep', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.reduceLogSumExp(x, -1, true);
+  // console.log(z.toString());
+  let expected = Tensor.create(Math.log(Math.exp(1)+ Math.exp(2)+ Math.exp(3)+ Math.exp(4)+ Math.exp(5)+ Math.exp(6)))
+      .reshape([1, 1]);
+
+  expect(z).toEqual(expected);
+});
+
+test('reduce logsumexp 0', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.reduceLogSumExp(x, 0);
+  // console.log(z.toString());
+  let expected = Tensor.create([
+      Math.log(Math.exp(1)+ Math.exp(4)),
+      Math.log(Math.exp(2)+ Math.exp(5)),
+      Math.log(Math.exp(3)+ Math.exp(6))
+  ]).reshape([3]);
+
+  expect(z).toEqual(expected);
+});
+
+test('reduce logsumexp 1', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.reduceLogSumExp(x, 1);
+  // console.log(z.toString());
+  let expected = Tensor.create([
+    Math.log(Math.exp(1)+ Math.exp(2)+ Math.exp(3)),
+    Math.log(Math.exp(4)+ Math.exp(5)+ Math.exp(6))
+  ]).reshape([2]);
+
+  expect(z).toEqual(expected);
+});
+
+test('reduce logsumexp 0, 1', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.reduceLogSumExp(x, [0, 1]);
+  // console.log(z.toString());
+  let expected = Tensor.create([
+    Math.log(Math.exp(1)+ Math.exp(2)+ Math.exp(3) + Math.exp(4)+ Math.exp(5)+ Math.exp(6))
+  ]).reshape([]);
+
+  expect(z).toEqual(expected);
+});
+
+
+test('l1norm', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l1Norm(x);
+  // console.log(z.toString());
+  let expected = Tensor.create(1+2+3+4+5+6);
+
+  expect(z).toEqual(expected);
+});
+
+test('l1norm 0', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l1Norm(x, 0);
+  // console.log(z.toString());
+  let expected = Tensor.create([1+4, 2+5, 3+6]);
+
+  expect(z).toEqual(expected);
+});
+
+test('l1norm 1', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l1Norm(x, 1);
+  // console.log(z.toString());
+  let expected = Tensor.create([1+2+3, 4+5+6]);
+
+  expect(z).toEqual(expected);
+});
+
+test('l1norm 1 keep', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l1Norm(x, 1, true);
+  // console.log(z.toString());
+  let expected = Tensor.create([[1+2+3], [4+5+6]]);
+
+  expect(z).toEqual(expected);
+});
+
+test('l2norm', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l2Norm(x);
+  // console.log(z.toString());
+  let expected = Tensor.create(Math.sqrt(1*1+2*2+3*3+4*4+5*5+6*6));
+
+  expect(z).toEqual(expected);
+});
+
+test('l2norm 0', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l2Norm(x, 0);
+  // console.log(z.toString());
+  let expected = Tensor.create([Math.sqrt(1*1+4*4), Math.sqrt(2*2+5*5), Math.sqrt( 3*3+6*6)]);
+
+  expect(z).toEqual(expected);
+});
+
+test('l2norm 1', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.l2Norm(x, 1);
+  // console.log(z.toString());
+  let expected = Tensor.create([Math.sqrt(1*1+2*2+3*3), Math.sqrt(4*4+5*5+6*6)]);
+
+  expect(z).toEqual(expected);
+});
+
+test('infnorm', function() {
+  let x = Tensor.create([[1, 2, 3], [-4, -5, -6]]);
+  let z = TensorMath.infNorm(x);
+  // console.log(z.toString());
+  let expected = Tensor.create(6);
+
+  expect(z).toEqual(expected);
+});
+
+test('pnorm 3', function() {
+  let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
+  let z = TensorMath.pNorm(x, 3);
+  // console.log(z.toString());
+  let expected = Tensor.create(Math.cbrt(1*1*1+2*2*2+3*3*3+4*4*4+5*5*5+6*6*6));
+
+  expect(z).toEqual(expected);
+});

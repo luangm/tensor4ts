@@ -1,4 +1,5 @@
 import Executor from "./executor/Executor";
+import ReductionExecutor from "./executor/ReductionExecutor";
 import {Col2ImOptions, default as Col2ImOp} from "./op/cnn/Col2ImOp";
 import {default as Im2ColOp, Im2ColOptions} from "./op/cnn/Im2ColOp";
 import ArangeOp from "./op/creation/ArangeOp";
@@ -12,6 +13,10 @@ import MinOp from "./op/pairwise/MinOp";
 import ModOp from "./op/pairwise/ModOp";
 import MultiplyOp from "./op/pairwise/MultiplyOp";
 import SubtractOp from "./op/pairwise/SubtractOp";
+import InfNormOp from "./op/reduction/InfNormOp";
+import L1NormOp from "./op/reduction/L1NormOp";
+import L2NormOp from "./op/reduction/L2NormOp";
+import PNormOp from "./op/reduction/PNormOp";
 import ReduceMaxOp from "./op/reduction/ReduceMaxOp";
 import ReduceMeanOp from "./op/reduction/ReduceMeanOp";
 import ReduceMinOp from "./op/reduction/ReduceMinOp";
@@ -234,18 +239,6 @@ export default class TensorMath {
     return result;
   }
 
-  // static logSumExp(base, dim = -1) {
-  //   if (dim < 0) {
-  //     dim += base.rank;
-  //   }
-  //   let max = TensorMath.reduceMax(base, dim, true);
-  //   let subtract = TensorMath.subtract(base, max);
-  //   let exp = TensorMath.exp(subtract);
-  //   let sum = TensorMath.reduceSum(exp, dim, true);
-  //   let log = TensorMath.log(sum);
-  //   return TensorMath.add(log, max);
-  // }
-
   static expm1(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new Expm1Op(base, null, result));
@@ -261,6 +254,34 @@ export default class TensorMath {
   static floor(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new FloorOp(base, null, result));
+    return result;
+  }
+
+  static im2col(base: Tensor, options: Im2ColOptions): Tensor {
+    let imageNum = base.shape[0];
+    let imageChannel = base.shape[1];
+    let imageHeight = base.shape[2]; // rows
+    let imageWidth = base.shape[3]; // cols
+
+    let kernelNum = options.kernelNum;
+    let kernelChannel = options.kernelChannel;
+    let kernelHeight = options.kernelHeight; // rows
+    let kernelWidth = options.kernelWidth; // cols
+
+    let padHeight = options.padHeight;
+    let padWidth = options.padWidth;
+    let strideHeight = options.strideHeight;
+    let strideWidth = options.strideWidth;
+
+    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
+    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
+    let resultHeight = kernelChannel * kernelHeight * kernelWidth;
+    let resultWidth = imageNum * outputHeight * outputWidth;
+
+    let result = Tensor.zeros([resultHeight, resultWidth]);
+
+    Executor.exec(new Im2ColOp(base, null, result, options));
+
     return result;
   }
 
@@ -294,32 +315,52 @@ export default class TensorMath {
   //   return result;
   // }
 
-  static im2col(base: Tensor, options: Im2ColOptions): Tensor {
-    let imageNum = base.shape[0];
-    let imageChannel = base.shape[1];
-    let imageHeight = base.shape[2]; // rows
-    let imageWidth = base.shape[3]; // cols
+  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
 
-    let kernelNum = options.kernelNum;
-    let kernelChannel = options.kernelChannel;
-    let kernelHeight = options.kernelHeight; // rows
-    let kernelWidth = options.kernelWidth; // cols
+  static pNorm(base: Tensor, p: number = 2, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new PNormOp(base, result, p, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
 
-    let padHeight = options.padHeight;
-    let padWidth = options.padWidth;
-    let strideHeight = options.strideHeight;
-    let strideWidth = options.strideWidth;
+  static infNorm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new InfNormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
 
-    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
-    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
-    let resultHeight = kernelChannel * kernelHeight * kernelWidth;
-    let resultWidth = imageNum * outputHeight * outputWidth;
-
-    let result = Tensor.zeros([resultHeight, resultWidth]);
-
-    Executor.exec(new Im2ColOp(base, null, result, options));
-
-    return result;
+  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
   }
 
   static linspace(base: Tensor, start: number, stop: number = 0, num: number, result?: Tensor): Tensor {
@@ -401,11 +442,39 @@ export default class TensorMath {
     return result;
   }
 
+  // static normalizeL2(base: Tensor, dims: number | number[] = -1): Tensor {
+  //   let max = TensorMath.reduceMax(base, dims, true);
+  //   let subtract = TensorMath.subtract(base, max);
+  //   let exp = TensorMath.exp(subtract);
+  //   let sum = TensorMath.reduceSum(exp, dims, true);
+  //   let log = TensorMath.log(sum);
+  //   let result = TensorMath.add(log, max);
+  //   if (keepDims) {
+  //     return result;
+  //   }
+  //   let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+  //   return result.reshape(reducedShape);
+  // }
+
+  static reduceLogSumExp(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let max = TensorMath.reduceMax(base, dims, true);
+    let subtract = TensorMath.subtract(base, max);
+    let exp = TensorMath.exp(subtract);
+    let sum = TensorMath.reduceSum(exp, dims, true);
+    let log = TensorMath.log(sum);
+    let result = TensorMath.add(log, max);
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
+
   static reduceMax(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ReduceMaxOp(base, null, result, reducedDims));
+    Executor.exec(new ReduceMaxOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }
@@ -417,7 +486,7 @@ export default class TensorMath {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ReduceMeanOp(base, null, result, reducedDims));
+    Executor.exec(new ReduceMeanOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }
@@ -429,7 +498,7 @@ export default class TensorMath {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ReduceMinOp(base, null, result, reducedDims));
+    Executor.exec(new ReduceMinOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }
@@ -441,7 +510,7 @@ export default class TensorMath {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ReduceProdOp(base, null, result, reducedDims));
+    Executor.exec(new ReduceProdOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }
@@ -453,7 +522,7 @@ export default class TensorMath {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ReduceSumOp(base, null, result, reducedDims));
+    Executor.exec(new ReduceSumOp(base, result, reducedDims));
     if (keepDims) {
       return result;
     }

@@ -17,3 +17,6 @@ TODO:
 * ~~ArgMin~~[DONE]
 * Emscripten / WebAssembly
 * Size Optimization
+* One Hot
+* Normalization - L1, L2, Max
+* Batch Norm

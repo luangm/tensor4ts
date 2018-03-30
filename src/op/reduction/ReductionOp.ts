@@ -5,8 +5,8 @@ export default abstract class ReductionOp extends Operation {
 
   private _reducedDims: boolean[];
 
-  constructor(input: Tensor, other: Tensor, result: Tensor, reducedDims: boolean[]) {
-    super(input, other, result);
+  constructor(input: Tensor, result: Tensor, reducedDims: boolean[]) {
+    super(input, null, result);
     this._reducedDims = reducedDims;
   }
 
