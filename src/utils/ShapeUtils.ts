@@ -26,6 +26,14 @@ export default class ShapeUtils {
     return result;
   }
 
+  static computeConvOutSize(imageSize: number, kernelSize: number, padSize = 0, stride = 1) {
+    let result = (imageSize - kernelSize + 2 * padSize) / stride + 1;
+    if (result !== Math.floor(result)) {
+      throw new Error('Cannot do conv with these values: imageSize: {' + imageSize + '}, kernelSize: {' + kernelSize + '}');
+    }
+    return result;
+  }
+
   /**
    * Get the shape that must be reshaped to match result's rank
    */
@@ -96,6 +104,14 @@ export default class ShapeUtils {
       left: left.length > 0 ? left : null,
       right: right.length > 0 ? right : null
     }
+  }
+
+  static getSlices(shape: number[], dimension: number): number {
+    let slices = 1;
+    for (let i = 0; i < shape.length; i++) {
+      slices *= (i === dimension) ? 1 : shape[i];
+    }
+    return slices;
   }
 
   static getStrides(shape: number[]): number[] {
@@ -195,13 +211,5 @@ export default class ShapeUtils {
       }
     }
     return true;
-  }
-
-  static computeConvOutSize(imageSize: number, kernelSize: number, padSize = 0, stride = 1) {
-      let result = (imageSize - kernelSize + 2 * padSize) / stride + 1;
-      if (result !== Math.floor(result)) {
-          throw new Error('Cannot do conv with these values: imageSize: {' + imageSize + '}, kernelSize: {' + kernelSize + '}');
-      }
-      return result;
   }
 }

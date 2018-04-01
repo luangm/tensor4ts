@@ -7,22 +7,13 @@ import TensorUtils from "./utils/TensorUtils";
 export default class Tensor {
 
   static tensorFormat: TensorFormat = new TensorFormat();
+
   private _data: Float32Array;
+  private _offset: number;
+  private _shape: Shape;
 
   get data() {
     return this._data;
-  }
-
-  private _offset: number;
-
-  get offset() {
-    return this._offset;
-  }
-
-  private _shape: Shape;
-
-  get shape() {
-    return this._shape.shape;
   }
 
   get isMatrix() {
@@ -41,8 +32,16 @@ export default class Tensor {
     return this._shape.length;
   }
 
+  get offset() {
+    return this._offset;
+  }
+
   get rank() {
     return this._shape.rank;
+  }
+
+  get shape() {
+    return this._shape.shape;
   }
 
   get slices() {
@@ -152,7 +151,10 @@ export default class Tensor {
     return TensorMath.floor(this, this);
   }
 
-  get(indices: number[]): number {
+  get(indices: number | number[]): number {
+    if (!Array.isArray(indices)) {
+      indices = this._shape.getIndices(indices);
+    }
     let offset = this._shape.getOffset(indices) + this.offset;
     return this._data[offset];
   }
@@ -193,6 +195,10 @@ export default class Tensor {
     return TensorMath.reciprocal(this, this);
   }
 
+  repeat(multiple: number, dimension: number = -1): Tensor {
+    return TensorMath.repeat(this, multiple, dimension);
+  }
+
   reshape(shape: number[]): Tensor {
     return TensorUtils.reshape(this, shape);
   }
@@ -205,7 +211,44 @@ export default class Tensor {
     return TensorMath.round(this, this);
   }
 
-  slice(num: number): Tensor {
+  set(indices: number | number[], value: number): void {
+    if (!Array.isArray(indices)) {
+      indices = this._shape.getIndices(indices);
+    }
+    let offset = this._shape.getOffset(indices) + this.offset;
+    this._data[offset] = value;
+  }
+
+  /**
+   * Slice the tensor.
+   *
+   * if any begin is -ve, it means from the back.
+   * If size is not specified or any size's dimension is -1. it means to the end.
+   *
+   * @param {number[]} begin - the indices to start the slice
+   * @param {number[]} size - the size(shape) of the slice.
+   * @returns {Tensor}
+   */
+  slice(begin: number[], size?: number[]): Tensor {
+    let offset = this.offset;
+    let newShape = this.shape.slice();
+    if (!size) {
+      size = new Array(this.rank).fill(-1);
+    }
+
+    for (let i = 0; i < this.rank; i++) {
+      let a = begin[i] < 0 ? begin[i] + this.shape[i] : begin[i];
+      offset += a * this.strides[i];
+
+      let width = size[i] < 0 ? (this.shape[i] - a) : Math.min(this.shape[i] - a, size[i]);
+      newShape[i] = width;
+    }
+
+    let shape = new Shape(newShape, this.strides, this._shape.order);
+    return new Tensor(this._data, shape, offset);
+  }
+
+  slice2(num: number): Tensor {
     let offset = this.offset;
     let newShape = [];
     let newStrides = [];
@@ -223,6 +266,10 @@ export default class Tensor {
 
   subtract(other: Tensor): Tensor {
     return TensorMath.subtract(this, other);
+  }
+
+  tile(repeats: number[]): Tensor {
+    return TensorMath.tile(this, repeats);
   }
 
   toString() {

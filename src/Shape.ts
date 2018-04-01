@@ -1,19 +1,13 @@
 import ShapeUtils from "./utils/ShapeUtils";
-import TensorUtils from "./utils/TensorUtils";
 
 export default class Shape {
 
   private _length: number;
   private _order: string;
+  private _rank: number;
   private _shape: number[];
+  private _shapeStrides: number[];
   private _strides: number[];
-
-  constructor(shape: number[], strides?: number[], order: string = 'c') {
-    this._shape = shape;
-    this._strides = strides || ShapeUtils.getStrides(shape);
-    this._length = ShapeUtils.getLength(shape);
-    this._order = order;
-  }
 
   get length() {
     return this._length;
@@ -24,7 +18,7 @@ export default class Shape {
   }
 
   get rank() {
-    return this._shape.length;
+    return this._rank;
   }
 
   get shape() {
@@ -35,12 +29,33 @@ export default class Shape {
     return this._strides;
   }
 
-  getOffset(indices: number[]): number {
-    if (this.rank !== indices.length) {
-      throw new Error('Indices must be the same length as rank of the tensor');
-    }
+  constructor(shape: number[], strides?: number[], order: string = 'c') {
+    this._shape = shape;
+    this._rank = shape.length;
+    this._shapeStrides = ShapeUtils.getStrides(shape);
+    this._strides = strides || this._shapeStrides;
+    this._length = ShapeUtils.getLength(shape);
+    this._order = order;
+  }
 
-    return TensorUtils.computeOffset(indices, this.shape, this.strides);
+  /**
+   * This reverses getOffset
+   */
+  getIndices(offset: number): number[] {
+    let indices = new Array(this.rank);
+    for (let i = 0; i < this.rank; i++) {
+      indices[i] = Math.floor(offset / this._shapeStrides[i]);
+      offset %= this._shapeStrides[i];
+    }
+    return indices;
+  }
+
+  getOffset(indices: number[]): number {
+    let offset = 0;
+    for (let i = 0; i < this.rank; i++) {
+      offset += indices[i] * this.strides[i];
+    }
+    return offset;
   }
 
   toString() {

@@ -4,6 +4,7 @@ import {Col2ImOptions, default as Col2ImOp} from "./op/cnn/Col2ImOp";
 import {default as Im2ColOp, Im2ColOptions} from "./op/cnn/Im2ColOp";
 import ArangeOp from "./op/creation/ArangeOp";
 import LinspaceOp from "./op/creation/LinspaceOp";
+import RepeatOp from "./op/creation/RepeatOp";
 import ArgMaxOp from "./op/index/ArgMaxOp";
 import ArgMinOp from "./op/index/ArgMinOp";
 import AddOp from "./op/pairwise/AddOp";
@@ -544,6 +545,19 @@ export default class TensorMath {
     return result;
   }
 
+  static repeat(base: Tensor, repeat: number, dim: number = -1): Tensor {
+    let shape: number[];
+    if (dim === -1) {
+      shape = [base.length * repeat];
+    } else {
+      shape = base.shape.slice();
+      shape[dim] *= repeat;
+    }
+    let result = Tensor.zeros(shape);
+    Executor.exec(new RepeatOp(base, result, repeat, dim));
+    return result;
+  }
+
   static round(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new RoundOp(base, result));
@@ -565,12 +579,6 @@ export default class TensorMath {
   static sigmoidGrad(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new SigmoidGradOp(base, result));
-    return result;
-  }
-
-  static sign(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SignOp(base, result));
     return result;
   }
 
@@ -603,6 +611,12 @@ export default class TensorMath {
   //   let subtract = TensorMath.subtract(grad, sum); // Sum will broadcast
   //   return TensorMath.multiply(subtract, softmax);
   // }
+
+  static sign(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new SignOp(base, result));
+    return result;
+  }
 
   static sin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -657,17 +671,17 @@ export default class TensorMath {
     return result;
   }
 
-  static subtract(left: Tensor, right: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
-    Executor.exec(new SubtractOp(left, right, result));
-    return result;
-  }
-
   // static sumSquaredError(label, prediction) {
   //   let sub = TensorMath.subtract(label, prediction);
   //   let sqr = TensorMath.square(sub);
   //   return TensorMath.reduceSum(sqr, -1);
   // }
+
+  static subtract(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new SubtractOp(left, right, result));
+    return result;
+  }
 
   static tan(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -693,15 +707,20 @@ export default class TensorMath {
     return result;
   }
 
-  // TODO: This is a Hack. TB Fixed
   static tile(base: Tensor, repeats: number[]): Tensor {
-    // let shape = base.shape.slice();
-    // for (let i = 0; i < shape.length; i++) {
-    //   shape[i] *= repeats[i];
-    // }
-    // let result = new Tensor({shape});
-    // Executor.exec(new SetOp(result, null, result, {scalar: base.data[0]}));
-    // return result;
-    return null;
+    let shape = base.shape.slice();
+    let n = base.length;
+    let tile = base;
+    for (let i = 0; i < shape.length; i++) {
+      if (repeats[i] != 1) {
+        tile = tile.reshape([-1, n]);
+        tile = TensorMath.repeat(tile, repeats[i], 0);
+      }
+
+      n /= shape[i];
+      shape[i] *= repeats[i];
+    }
+    return tile.reshape(shape);
   }
+
 }

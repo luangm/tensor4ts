@@ -10,7 +10,7 @@ TODO:
 * ~~Element-wise transform~~ [DONE]
 * ~~ReduceSum~~, ~~ReduceMax~~, ~~ReduceMin~~ [DONE]
 * ~~ReduceMean~~ [DONE]
-* Tile
+* ~~Tile~~ [DONE]
 * ~~MatMul Standard GEMM~~ [DONE]
 * GEMM Optimization (Blocking + Packing)
 * WebGL Add
@@ -18,5 +18,6 @@ TODO:
 * Emscripten / WebAssembly
 * Size Optimization
 * One Hot
+* ~~L1, L2, LInfNorms~~ [DONE]
 * Normalization - L1, L2, Max
 * Batch Norm

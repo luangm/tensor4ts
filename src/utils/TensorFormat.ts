@@ -57,7 +57,7 @@ export default class TensorFormat {
     offset++;
     let result = '[';
     for (let i = 0; i < tensor.slices; i++) {
-      let slice = tensor.slice(i);
+      let slice = tensor.slice2(i);
       result += this.formatRecursive(slice, rank - 1, offset);
       if (i !== tensor.slices - 1) {
         result += this._options.separator + '\n';

@@ -9,18 +9,18 @@ export class ReductionExecutor {
     switch (op.result.rank) {
       case 0:
       case 1:
-        this.execReduce1Vector(op);
+        this.execReduce1dVector(op);
         break;
       case 2:
-        this.execReduce2Matrix(op);
+        this.execReduce2dMatrix(op);
         break;
       default:
-        this.execReduce9General(op);
+        this.execReduceNdGeneral(op);
         break;
     }
   }
 
-  private execReduce1Vector(op: ReductionOp): void {
+  private execReduce1dVector(op: ReductionOp): void {
     let input = op.input.data;
     let result = op.result.data;
     if (op.initialValue !== 0) {
@@ -38,7 +38,7 @@ export class ReductionExecutor {
     }
   }
 
-  private execReduce2Matrix(op: ReductionOp): void {
+  private execReduce2dMatrix(op: ReductionOp): void {
     let reducedDims = op.reducedDims;
     let input = op.input.data;
     let result = op.result.data;
@@ -80,7 +80,7 @@ export class ReductionExecutor {
     }
   }
 
-  private execReduce9General(op: ReductionOp): void {
+  private execReduceNdGeneral(op: ReductionOp): void {
     let reducedDims = op.reducedDims;
     let input = op.input.data;
     let result = op.result.data;
