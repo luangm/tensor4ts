@@ -3,13 +3,13 @@
     "module": "es6",
     "target": "es5",
     "noImplicitAny": true,
-    "outDir": "./dist",
+    "outDir": "dist/lib",
     "sourceMap": true,
     "removeComments": true,
     "declaration": true,
     "importHelpers": true,
     "moduleResolution": "node",
-    "declarationDir": "./dist/types",
+    "declarationDir": "dist/types",
     "lib": ["DOM","ES6","DOM.Iterable","ScriptHost"]
   },
   "exclude": [
