@@ -3,7 +3,8 @@ import ReductionOp from "./ReductionOp";
 
 export default class PNormOp extends ReductionOp {
 
-  private _p: number;
+  private readonly _p: number;
+
   get p() {
     return this._p;
   }
@@ -17,7 +18,7 @@ export default class PNormOp extends ReductionOp {
     this._p = p;
   }
 
-  body(a: number, b?: number): number {
+  body(a: number): number {
     return Math.pow(Math.abs(a), this.p);
   }
 

@@ -3,7 +3,8 @@ import TransformOp from "./TransformOp";
 
 export default class PowerOp extends TransformOp {
 
-  private _power: number;
+  private readonly _power: number;
+
   get power() {
     return this._power;
   }
@@ -13,7 +14,7 @@ export default class PowerOp extends TransformOp {
     this._power = power;
   }
 
-  body(a: number, b?: number): number {
+  body(a: number): number {
     return Math.pow(a, this.power);
   }
 

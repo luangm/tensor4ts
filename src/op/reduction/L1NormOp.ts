@@ -1,8 +1,13 @@
 import ReductionOp from "./ReductionOp";
+import Tensor from "../../Tensor";
 
 export default class L1NormOp extends ReductionOp {
 
-  body(a: number, b?: number): number {
+  constructor(base: Tensor, result: Tensor, reducedDims: boolean[]) {
+    super(base, result, reducedDims);
+  }
+
+  body(a: number): number {
     return Math.abs(a);
   }
 

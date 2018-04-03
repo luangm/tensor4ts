@@ -1,9 +1,9 @@
-import PairwiseOp from "../op/pairwise/PairwiseOp";
 import ShapeUtils from "../utils/ShapeUtils";
+import ComparisonOp from "../op/comparison/ComparisonOp";
 
-export class PairwiseExecutor {
+export class ComparisonExecutor {
 
-  public exec(op: PairwiseOp): void {
+  public exec(op: ComparisonOp): void {
     switch (op.result.rank) {
       case 0:
         this.exec0Scalar(op);
@@ -20,7 +20,7 @@ export class PairwiseExecutor {
     }
   }
 
-  private exec0Scalar(op: PairwiseOp): void {
+  private exec0Scalar(op: ComparisonOp): void {
     let input = op.left.data;
     let other = op.right.data;
     let result = op.result.data;
@@ -28,7 +28,7 @@ export class PairwiseExecutor {
     result[0] = op.body(input[0], other[0]);
   }
 
-  private exec1Vector(op: PairwiseOp): void {
+  private exec1Vector(op: ComparisonOp): void {
     let result = op.result.data;
     let shape = op.result.shape;
 
@@ -58,7 +58,7 @@ export class PairwiseExecutor {
     }
   }
 
-  private exec2Matrix(op: PairwiseOp): void {
+  private exec2Matrix(op: ComparisonOp): void {
 
     let result = op.result.data;
     let shape = op.result.shape;
@@ -108,7 +108,7 @@ export class PairwiseExecutor {
     }
   }
 
-  private exec9General(op: PairwiseOp): void {
+  private exec9General(op: ComparisonOp): void {
     let result = op.result.data;
     let shape = op.result.shape;
 
@@ -172,4 +172,4 @@ export class PairwiseExecutor {
 
 }
 
-export default new PairwiseExecutor();
+export default new ComparisonExecutor();

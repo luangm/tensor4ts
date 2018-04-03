@@ -15,7 +15,7 @@ export default class ShapeUtils {
       let right = bIndex >= 0 ? b[bIndex] : 1;
 
       if (left !== 1 && right !== 1 && left !== right) {
-        throw new Error('cannot broadcast shapes.' + a + ", " + b + ' not compatible');
+        throw new Error("cannot broadcast shapes." + a + ", " + b + " not compatible");
       }
 
       result[dim] = Math.max(left, right);
@@ -29,7 +29,7 @@ export default class ShapeUtils {
   static computeConvOutSize(imageSize: number, kernelSize: number, padSize = 0, stride = 1) {
     let result = (imageSize - kernelSize + 2 * padSize) / stride + 1;
     if (result !== Math.floor(result)) {
-      throw new Error('Cannot do conv with these values: imageSize: {' + imageSize + '}, kernelSize: {' + kernelSize + '}');
+      throw new Error("Cannot do conv with these values: imageSize: {" + imageSize + "}, kernelSize: {" + kernelSize + "}");
     }
     return result;
   }
@@ -86,7 +86,7 @@ export default class ShapeUtils {
    * @param {[int]} b - shape2
    * @return {{left: [int]|null, right: [int]|null}}
    */
-  static getReductionIndices(a: number[], b: number[]): { left: number[], right: number[] } {
+  static getReductionIndices(a: number[], b: number[]): { left: number[] | null, right: number[] | null } {
     let resultShape = ShapeUtils.broadcastShapes(a, b);
     let left = [];
     let right = [];
@@ -103,7 +103,7 @@ export default class ShapeUtils {
     return {
       left: left.length > 0 ? left : null,
       right: right.length > 0 ? right : null
-    }
+    };
   }
 
   static getSlices(shape: number[], dimension: number): number {
@@ -124,7 +124,7 @@ export default class ShapeUtils {
       val *= shape[i];
     }
 
-    return strides
+    return strides;
   }
 
   static inferOrder(shape: number[], strides: number[]): string {
@@ -150,9 +150,9 @@ export default class ShapeUtils {
     }
 
     if (isFortran && !isC) {
-      return 'f';
+      return "f";
     }
-    return 'c';
+    return "c";
   }
 
   static reduce(shape: number[], dimension: number): number[] {

@@ -1,12 +1,18 @@
 import Shape from "../../Shape";
 import Tensor from "../../Tensor";
 import ShapeUtils from "../../utils/ShapeUtils";
-import Operation from "../Operation"
+import Operation from "../Operation";
 
 export default class RepeatOp extends Operation {
 
-  private _dimension: number;
-  private _repeat: number;
+  private readonly _base: Tensor;
+  private readonly _dimension: number;
+  private readonly _repeat: number;
+  private readonly _result: Tensor;
+
+  get base() {
+    return this._base;
+  }
 
   get dimension() {
     return this._dimension;
@@ -20,8 +26,14 @@ export default class RepeatOp extends Operation {
     return this._repeat;
   }
 
-  constructor(input: Tensor, result: Tensor, repeat: number, dimension: number) {
-    super(input, null, result);
+  get result() {
+    return this._result;
+  }
+
+  constructor(base: Tensor, result: Tensor, repeat: number, dimension: number) {
+    super([base], [result]);
+    this._base = base;
+    this._result = result;
     this._repeat = repeat;
     this._dimension = dimension;
   }
@@ -32,7 +44,7 @@ export default class RepeatOp extends Operation {
       return;
     }
 
-    switch (this.input.rank) {
+    switch (this.base.rank) {
       case 1:
         this.execVector();
         break;
@@ -43,10 +55,10 @@ export default class RepeatOp extends Operation {
   }
 
   execGeneral() {
-    let shape = this.input.shape;
+    let shape = this.base.shape;
     let length = ShapeUtils.getSlices(shape, this.dimension);
 
-    let tempShape = this.input.shape.slice();
+    let tempShape = this.base.shape.slice();
     tempShape[this.dimension] = 1;
     let tempShapeObj = new Shape(tempShape);
 
@@ -55,7 +67,7 @@ export default class RepeatOp extends Operation {
 
     for (let i = 0; i < length; i++) {
       let indices = tempShapeObj.getIndices(i);
-      let inputSlice = this.input.slice(indices, size);
+      let inputSlice = this.base.slice(indices, size);
       let resultSlice = this.result.slice(indices, size);
 
       let idx = 0;
@@ -70,10 +82,10 @@ export default class RepeatOp extends Operation {
   }
 
   execVector() {
-    let length = this.input.length;
+    let length = this.base.length;
     let idx = 0;
     for (let i = 0; i < length; i++) {
-      let val = this.input.get(i);
+      let val = this.base.get(i);
       for (let p = 0; p < this.repeat; p++) {
         this.result.set(idx, val);
         idx++;

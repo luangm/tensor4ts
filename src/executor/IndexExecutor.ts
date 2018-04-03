@@ -17,7 +17,7 @@ export class IndexExecutor {
   }
 
   private exec1Vector(op: IndexOp): void {
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
 
     let accum = op.body(input[0]);

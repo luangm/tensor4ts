@@ -8,6 +8,7 @@ import PairwiseExecutor from "./PairwiseExecutor";
 import ReductionExecutor from "./ReductionExecutor";
 import TransformExecutor from "./TransformExecutor";
 import IndexExecutor from "./IndexExecutor";
+import ComparisonExecutor from "./ComparisonExecutor";
 
 /**
  * Executor class is used to execute Ops
@@ -30,7 +31,7 @@ export class Executor {
     }
 
     if (op instanceof ComparisonOp) {
-      PairwiseExecutor.exec(op);
+      ComparisonExecutor.exec(op);
       return;
     }
 

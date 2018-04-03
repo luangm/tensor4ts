@@ -4,17 +4,30 @@ import Tensor from "../../Tensor";
 export default class ConditionalOp extends Operation {
 
   private readonly _condition: Tensor;
+  private readonly _falsy: Tensor;
+  private readonly _truthy: Tensor;
+
   get condition() {
     return this._condition;
   }
 
-  constructor(condition: Tensor, input: Tensor, other: Tensor, result: Tensor) {
-    super(input, other, result);
-    this._condition = condition;
+  get falsy() {
+    return this._falsy;
   }
 
-  body(a: number, b?: number): number {
-    return a === b ? 1 : 0;
+  get truthy() {
+    return this._truthy;
+  }
+
+  constructor(condition: Tensor, truthy: Tensor, falsy: Tensor, result: Tensor) {
+    super([condition, truthy, falsy], [result]);
+    this._condition = condition;
+    this._truthy = truthy;
+    this._falsy = falsy;
+  }
+
+  body(c: number, a: number, b: number): number {
+    return c ? a : b;
   }
 
   exec(dim?: number): void {

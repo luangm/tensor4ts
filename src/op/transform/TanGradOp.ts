@@ -1,8 +1,13 @@
 import TransformOp from "./TransformOp";
+import Tensor from "../../Tensor";
 
 export default class TanGradOp extends TransformOp {
 
-  body(a: number, b?: number): number {
+  constructor(base: Tensor, result: Tensor) {
+    super(base, result);
+  }
+
+  body(a: number): number {
     let sec = 1 / Math.cos(a);
     return sec * sec;
   }

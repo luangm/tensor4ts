@@ -17,14 +17,12 @@ export interface Col2ImOptions {
 
 export default class Col2ImOp extends Operation {
 
-  private _options: Col2ImOptions;
+  private readonly _input: Tensor;
+  private readonly _options: Col2ImOptions;
+  private readonly _result: Tensor;
 
-  constructor(input: Tensor, other: Tensor, result: Tensor, options: Col2ImOptions) {
-    super(input, other, result);
-    this._options = options;
-    if (input.rank !== 2) {
-      throw new Error("col's rank is not 2");
-    }
+  get input() {
+    return this._input;
   }
 
   get isSpecial() {
@@ -33,6 +31,20 @@ export default class Col2ImOp extends Operation {
 
   get options() {
     return this._options;
+  }
+
+  get result() {
+    return this._result;
+  }
+
+  constructor(input: Tensor, result: Tensor, options: Col2ImOptions) {
+    super([input], [result]);
+    this._options = options;
+    this._input = input;
+    this._result = result;
+    if (input.rank !== 2) {
+      throw new Error("col's rank is not 2");
+    }
   }
 
   exec(dim?: number): void {

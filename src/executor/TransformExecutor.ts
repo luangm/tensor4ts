@@ -18,7 +18,7 @@ export class TransformExecutor {
   }
 
   private exec1Vector(op: TransformOp): void {
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
 
     for (let i = 0; i < result.length; i++) {
@@ -27,10 +27,10 @@ export class TransformExecutor {
   }
 
   private exec2Matrix(op: TransformOp): void {
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
 
-    let inputStrides = op.input.strides;
+    let inputStrides = op.base.strides;
     let resultStrides = op.result.strides;
 
     let shape = op.result.shape;
@@ -46,7 +46,7 @@ export class TransformExecutor {
   }
 
   private exec9General(op: TransformOp): void {
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
     let shape = op.result.shape;
     let rank = shape.length | 0;
@@ -64,7 +64,7 @@ export class TransformExecutor {
     for (let i = 0; i < rank; i++) {
       let r = rank - 1 - i;
       MEM.push(shape[r]);
-      iS[i] = op.input.strides[r] | 0;
+      iS[i] = op.base.strides[r] | 0;
       rS[i] = op.result.strides[r] | 0;
       MEM.push(iS[i] - (i > 0 ? iS[i - 1] * shape[rank - i] : 0));
       MEM.push(rS[i] - (i > 0 ? rS[i - 1] * shape[rank - i] : 0));

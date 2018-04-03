@@ -21,7 +21,7 @@ export class ReductionExecutor {
   }
 
   private exec1Vector(op: ReductionOp): void {
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
@@ -40,16 +40,16 @@ export class ReductionExecutor {
 
   private exec2Matrix(op: ReductionOp): void {
     let reducedDims = op.reducedDims;
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
     }
 
-    let inputStrides = op.input.strides;
+    let inputStrides = op.base.strides;
     let resultStrides = op.result.strides;
 
-    let shape = op.input.shape; // accumulate around input, not the result
+    let shape = op.base.shape; // accumulate around input, not the result
     let s0 = shape[0];
     let s1 = shape[1];
     let is0 = inputStrides[0];
@@ -82,13 +82,13 @@ export class ReductionExecutor {
 
   private exec9General(op: ReductionOp): void {
     let reducedDims = op.reducedDims;
-    let input = op.input.data;
+    let input = op.base.data;
     let result = op.result.data;
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
     }
 
-    let shape = op.input.shape;
+    let shape = op.base.shape;
     let rank = shape.length | 0;
 
     let inputPointer = 0;
@@ -104,7 +104,7 @@ export class ReductionExecutor {
     for (let i = 0; i < rank; i++) {
       let r = rank - 1 - i;
       MEM.push(shape[r]);
-      iS[i] = op.input.strides[r] | 0;
+      iS[i] = op.base.strides[r] | 0;
       rS[i] = (reducedDims[r] ? 0 : op.result.strides[r]) | 0;
       MEM.push(iS[i] - (i > 0 ? iS[i - 1] * shape[rank - i] : 0));
       MEM.push(rS[i] - (i > 0 ? rS[i - 1] * shape[rank - i] : 0));

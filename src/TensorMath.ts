@@ -101,19 +101,20 @@ export default class TensorMath {
 
   // TODO
   static addN(items: Tensor[]): Tensor {
-    return null;
+    return Tensor.create(0);
   }
 
-  static arange(base: Tensor, stop: number, start: number = 0, step: number = 1, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new ArangeOp(base, null, result, stop, start, step));
+  static arange(stop: number, start: number = 0, step: number = 1, result?: Tensor): Tensor {
+    let num = Math.ceil((stop - start) / step);
+    result = result || Tensor.zeros([num]);
+    Executor.exec(new ArangeOp(result, stop, start, step));
     return result;
   }
 
   static argMax(base: Tensor, dim: number = -1, keepDims: boolean = false): Tensor {
     let resultShape = ShapeUtils.reduceShape(base.shape, dim, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ArgMaxOp(base, null, result, dim));
+    Executor.exec(new ArgMaxOp(base, result, dim));
     if (keepDims) {
       return result;
     }
@@ -124,7 +125,7 @@ export default class TensorMath {
   static argMin(base: Tensor, dim: number = -1, keepDims: boolean = false): Tensor {
     let resultShape = ShapeUtils.reduceShape(base.shape, dim, true);
     let result = Tensor.zeros(resultShape);
-    Executor.exec(new ArgMinOp(base, null, result, dim));
+    Executor.exec(new ArgMinOp(base, result, dim));
     if (keepDims) {
       return result;
     }
@@ -133,13 +134,13 @@ export default class TensorMath {
   }
 
   // TODO
-  static argSet(source: Tensor, args: number, shape: number, dim: number): Tensor {
-    // let result = new Tensor({shape: shape});
-    // let op = new IndexSetOp(source, args, result);
-    // Executor.execAtDim(op, dim);
-    // return result;
-    return null;
-  }
+  // static argSet(source: Tensor, args: number, shape: number, dim: number): Tensor {
+  //   // let result = new Tensor({shape: shape});
+  //   // let op = new IndexSetOp(source, args, result);
+  //   // Executor.execAtDim(op, dim);
+  //   // return result;
+  //   return null;
+  // }
 
   static asin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -173,34 +174,34 @@ export default class TensorMath {
 
   static col2im(base: Tensor, options: Col2ImOptions): Tensor {
     let result = Tensor.zeros([options.imageNum, options.imageChannel, options.imageHeight, options.imageWidth]);
-    Executor.exec(new Col2ImOp(base, null, result, options));
+    Executor.exec(new Col2ImOp(base, result, options));
     return result;
   }
 
   // TODO
-  static conv2d(image: Tensor, kernel: Tensor): Tensor {
-    return null;
-    // let xCol = TensorUtils.im2col(image, kernel.shape);
-    //
-    // let numImages = image.shape[0];
-    // let channels = image.shape[1];
-    // let height = image.shape[2]; // rows
-    // let width = image.shape[3]; // cols
-    //
-    // let numKernels = kernel.shape[0];
-    // let kernelChannels = kernel.shape[1];
-    // let kernelHeight = kernel.shape[2]; // rows
-    // let kernelWidth = kernel.shape[3]; // cols
-    //
-    // let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight);
-    // let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth);
-    //
-    // let kCol = kernel.reshape([numKernels, kernelChannels * kernelWidth * kernelHeight]);
-    // let result = TensorMath.matmul(kCol, xCol);
-    // let reshaped = result.reshape([numKernels, numImages, outputHeight, outputWidth]);
-    // let transposed = reshaped.transpose([1, 0, 2, 3]);
-    // return transposed;
-  }
+  // static conv2d(image: Tensor, kernel: Tensor): Tensor {
+  //   return null;
+  //   // let xCol = TensorUtils.im2col(image, kernel.shape);
+  //   //
+  //   // let numImages = image.shape[0];
+  //   // let channels = image.shape[1];
+  //   // let height = image.shape[2]; // rows
+  //   // let width = image.shape[3]; // cols
+  //   //
+  //   // let numKernels = kernel.shape[0];
+  //   // let kernelChannels = kernel.shape[1];
+  //   // let kernelHeight = kernel.shape[2]; // rows
+  //   // let kernelWidth = kernel.shape[3]; // cols
+  //   //
+  //   // let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight);
+  //   // let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth);
+  //   //
+  //   // let kCol = kernel.reshape([numKernels, kernelChannels * kernelWidth * kernelHeight]);
+  //   // let result = TensorMath.matmul(kCol, xCol);
+  //   // let reshaped = result.reshape([numKernels, numImages, outputHeight, outputWidth]);
+  //   // let transposed = reshaped.transpose([1, 0, 2, 3]);
+  //   // return transposed;
+  // }
 
   static cos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -314,7 +315,7 @@ export default class TensorMath {
 
     let result = Tensor.zeros([resultHeight, resultWidth]);
 
-    Executor.exec(new Im2ColOp(base, null, result, options));
+    Executor.exec(new Im2ColOp(base, result, options));
 
     return result;
   }
@@ -397,9 +398,9 @@ export default class TensorMath {
     return result;
   }
 
-  static linspace(base: Tensor, start: number, stop: number = 0, num: number, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
+  static linspace(start: number, stop: number = 0, num: number, result?: Tensor): Tensor {
+    result = result || Tensor.zeros([num]);
+    Executor.exec(new LinspaceOp(result, start, stop, num));
     return result;
   }
 

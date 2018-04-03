@@ -15,8 +15,8 @@ export default class Gemm {
   private _transB: boolean;
 
   constructor(transA: boolean, transB: boolean, m: number, n: number, k: number,
-              alpha: number, A: Float32Array, lda: number, B: Float32Array, ldb: number,
-              beta: number, C: Float32Array, ldc: number) {
+              alpha: number, A: Float32Array, lda: number = 0, B: Float32Array, ldb: number = 0,
+              beta: number, C: Float32Array, ldc: number = 0) {
     this._transA = transA;
     this._transB = transB;
     this._m = m;

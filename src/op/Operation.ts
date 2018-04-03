@@ -2,36 +2,26 @@ import Tensor from "../Tensor";
 
 export default abstract class Operation {
 
-  private readonly _input: Tensor;
-  private readonly _other: Tensor;
-  private readonly _result: Tensor;
+  private readonly _inputs: Tensor[];
+  private readonly _results: Tensor[];
 
-  get input() {
-    return this._input;
+  get inputs() {
+    return this._inputs;
   }
 
   get isSpecial() {
     return false;
   }
 
-  get other() {
-    return this._other;
+  get results() {
+    return this._results;
   }
 
-  get result() {
-    return this._result;
+  protected constructor(inputs: Tensor[], results: Tensor[]) {
+    this._inputs = inputs;
+    this._results = results;
   }
 
-  constructor(input: Tensor, other: Tensor, result: Tensor) {
-    this._input = input;
-    this._other = other;
-    this._result = result;
-  }
-
-  body(a: number, b?: number): number {
-    return a;
-  }
-
-  abstract exec(dim?: number): void;
+  abstract exec(dim?: number | number[]): void;
 
 }

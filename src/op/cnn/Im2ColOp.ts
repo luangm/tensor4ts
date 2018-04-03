@@ -15,17 +15,12 @@ export interface Im2ColOptions {
 
 export default class Im2ColOp extends Operation {
 
-  private _options: Im2ColOptions;
+  private readonly _input: Tensor;
+  private readonly _options: Im2ColOptions;
+  private readonly _result: Tensor;
 
-  constructor(input: Tensor, other: Tensor, result: Tensor, options: Im2ColOptions) {
-    super(input, other, result);
-    this._options = options;
-    if (input.rank !== 4) {
-      throw new Error("image's rank is not 4");
-    }
-    if (input.shape[1] !== options.kernelChannel) {
-      throw new Error('image channels (shape[1]) must equal kernel channels (shape[1])');
-    }
+  get input() {
+    return this._input;
   }
 
   get isSpecial() {
@@ -34,6 +29,23 @@ export default class Im2ColOp extends Operation {
 
   get options() {
     return this._options;
+  }
+
+  get result() {
+    return this._result;
+  }
+
+  constructor(input: Tensor, result: Tensor, options: Im2ColOptions) {
+    super([input], [result]);
+    this._options = options;
+    this._input = input;
+    this._result = result;
+    if (input.rank !== 4) {
+      throw new Error("image's rank is not 4");
+    }
+    if (input.shape[1] !== options.kernelChannel) {
+      throw new Error("image channels (shape[1]) must equal kernel channels (shape[1])");
+    }
   }
 
   exec(dim?: number): void {

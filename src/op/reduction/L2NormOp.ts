@@ -1,4 +1,5 @@
 import ReductionOp from "./ReductionOp";
+import Tensor from "../../Tensor";
 
 export default class L2NormOp extends ReductionOp {
 
@@ -6,7 +7,11 @@ export default class L2NormOp extends ReductionOp {
     return true;
   }
 
-  body(a: number, b?: number): number {
+  constructor(base: Tensor, result: Tensor, reducedDims: boolean[]) {
+    super(base, result, reducedDims);
+  }
+
+  body(a: number): number {
     return a * a;
   }
 

@@ -3,11 +3,12 @@ import Tensor from "../../Tensor";
 
 export default abstract class ReductionOp extends Operation {
 
-  private _reducedDims: boolean[];
+  private readonly _base: Tensor;
+  private readonly _reducedDims: boolean[];
+  private readonly _result: Tensor;
 
-  constructor(input: Tensor, result: Tensor, reducedDims: boolean[]) {
-    super(input, null, result);
-    this._reducedDims = reducedDims;
+  get base() {
+    return this._base;
   }
 
   get initialValue() {
@@ -18,8 +19,23 @@ export default abstract class ReductionOp extends Operation {
     return this._reducedDims;
   }
 
+  get result() {
+    return this._result;
+  }
+
   get shouldPostProcess() {
     return false;
+  }
+
+  protected constructor(base: Tensor, result: Tensor, reducedDims: boolean[]) {
+    super([base], [result]);
+    this._base = base;
+    this._result = result;
+    this._reducedDims = reducedDims;
+  }
+
+  body(a: number): number {
+    return a;
   }
 
   exec(dim?: number): void {

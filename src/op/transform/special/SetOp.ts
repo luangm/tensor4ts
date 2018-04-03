@@ -3,14 +3,18 @@ import Tensor from "../../../Tensor";
 
 export default class SetOp extends TransformOp {
 
-  private _scalar: number;
+  private readonly _scalar: number;
+
+  get scalar() {
+    return this._scalar;
+  }
 
   constructor(input: Tensor, result: Tensor, scalar: number) {
     super(input, result);
     this._scalar = scalar;
   }
 
-  body(a: number, b?: number): number {
+  body(a: number): number {
     return this._scalar;
   }
 

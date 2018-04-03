@@ -8,9 +8,9 @@ export default class Tensor {
 
   static tensorFormat: TensorFormat = new TensorFormat();
 
-  private _data: Float32Array;
-  private _offset: number;
-  private _shape: Shape;
+  private readonly _data: Float32Array;
+  private readonly _offset: number;
+  private readonly _shape: Shape;
 
   get data() {
     return this._data;

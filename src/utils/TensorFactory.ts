@@ -8,9 +8,7 @@ import TensorMath from "../TensorMath";
 export default class TensorFactory {
 
   static arange(stop: number, start: number, step: number): Tensor {
-    let num = Math.ceil((stop - start) / step);
-    let tensor = Tensor.zeros([num]);
-    return TensorMath.arange(tensor, stop, start, step, tensor);
+    return TensorMath.arange(stop, start, step);
   }
 
   /**
@@ -35,6 +33,10 @@ export default class TensorFactory {
     return new Tensor(buffer, shape);
   }
 
+  static linspace(start: number, stop: number, num: number) {
+    return TensorMath.linspace(start, stop, num);
+  }
+
   static ones(shape: number[]): Tensor {
     return TensorFactory.zeros(shape).filli(1);
   }
@@ -48,11 +50,6 @@ export default class TensorFactory {
     let data = new Float32Array([scalar]);
     let shape = new Shape([]);
     return new Tensor(data, shape);
-  }
-
-  static linspace(start: number, stop: number, num: number) {
-      let tensor = Tensor.zeros([num]);
-      return TensorMath.linspace(tensor, start, stop, num);
   }
 
   static vector(array: number[]): Tensor {
@@ -70,7 +67,7 @@ export default class TensorFactory {
   private static findShape(array: number | number[], shape: number[] = [], dim: number = 0): number[] {
     if (Array.isArray(array)) {
       if (array.length === 0) {
-        throw new Error('array\'s length cannot be zero');
+        throw new Error("array's length cannot be zero");
       }
       shape.push(array.length);
       TensorFactory.findShape(array[0], shape, dim + 1);
@@ -89,7 +86,7 @@ export default class TensorFactory {
 
     if (Array.isArray(array)) {
       if (array.length !== shape.shape[dim]) {
-        throw new Error('Dimension not match');
+        throw new Error("Dimension not match");
       }
 
       for (let i = 0; i < array.length; i++) {
