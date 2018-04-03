@@ -11,7 +11,7 @@ import AddOp from "./op/pairwise/AddOp";
 import DivideOp from "./op/pairwise/DivideOp";
 import MaxOp from "./op/pairwise/MaxOp";
 import MinOp from "./op/pairwise/MinOp";
-import ModOp from "./op/pairwise/ModOp";
+import FloorModOp from "./op/pairwise/FloorModOp";
 import MultiplyOp from "./op/pairwise/MultiplyOp";
 import SubtractOp from "./op/pairwise/SubtractOp";
 import InfNormOp from "./op/reduction/InfNormOp";
@@ -73,6 +73,9 @@ import LessEqualOp from "./op/comparison/LessEqualOp";
 import LessOp from "./op/comparison/LessOp";
 import NotEqualOp from "./op/comparison/NotEqualOp";
 import ConditionalOp from "./op/ternary/ConditionalOp";
+import TruncModOp from "./op/pairwise/TruncModOp";
+import FloorDivOp from "./op/pairwise/FloorDivOp";
+import TruncDivOp from "./op/pairwise/TruncDivOp";
 
 export default class TensorMath {
 
@@ -287,6 +290,18 @@ export default class TensorMath {
     return result;
   }
 
+  static floorDiv(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new FloorDivOp(left, right, result));
+    return result;
+  }
+
+  static floorMod(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new FloorModOp(left, right, result));
+    return result;
+  }
+
   static greater(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new GreaterOp(left, right, result));
@@ -339,30 +354,6 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
-  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
-  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
   // static maxPool(image, kernelShape, strideWidth, strideHeight) {
   //
   //   let numImages = image.shape[0];
@@ -392,6 +383,30 @@ export default class TensorMath {
   //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
   //   return result;
   // }
+
+  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
+
+  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
 
   static less(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
@@ -445,12 +460,6 @@ export default class TensorMath {
   static min(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new MinOp(left, right, result));
-    return result;
-  }
-
-  static mod(left: Tensor, right: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
-    Executor.exec(new ModOp(left, right, result));
     return result;
   }
 
@@ -508,20 +517,6 @@ export default class TensorMath {
     return result;
   }
 
-  // static normalizeL2(base: Tensor, dims: number | number[] = -1): Tensor {
-  //   let max = TensorMath.reduceMax(base, dims, true);
-  //   let subtract = TensorMath.subtract(base, max);
-  //   let exp = TensorMath.exp(subtract);
-  //   let sum = TensorMath.reduceSum(exp, dims, true);
-  //   let log = TensorMath.log(sum);
-  //   let result = TensorMath.add(log, max);
-  //   if (keepDims) {
-  //     return result;
-  //   }
-  //   let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-  //   return result.reshape(reducedShape);
-  // }
-
   static reduceLogSumExp(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let max = TensorMath.reduceMax(base, dims, true);
     let subtract = TensorMath.subtract(base, max);
@@ -535,6 +530,20 @@ export default class TensorMath {
     let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
     return result.reshape(reducedShape);
   }
+
+  // static normalizeL2(base: Tensor, dims: number | number[] = -1): Tensor {
+  //   let max = TensorMath.reduceMax(base, dims, true);
+  //   let subtract = TensorMath.subtract(base, max);
+  //   let exp = TensorMath.exp(subtract);
+  //   let sum = TensorMath.reduceSum(exp, dims, true);
+  //   let log = TensorMath.log(sum);
+  //   let result = TensorMath.add(log, max);
+  //   if (keepDims) {
+  //     return result;
+  //   }
+  //   let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+  //   return result.reshape(reducedShape);
+  // }
 
   static reduceMax(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
@@ -639,6 +648,12 @@ export default class TensorMath {
     return result;
   }
 
+  static sign(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new SignOp(base, result));
+    return result;
+  }
+
   // static softmaxCrossEntropyGrad(labels, logits) {
   //   let softmax = TensorMath(logits);
   //   return TensorMath.subtract(softmax, labels);
@@ -668,12 +683,6 @@ export default class TensorMath {
   //   let subtract = TensorMath.subtract(grad, sum); // Sum will broadcast
   //   return TensorMath.multiply(subtract, softmax);
   // }
-
-  static sign(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new SignOp(base, result));
-    return result;
-  }
 
   static sin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -728,17 +737,17 @@ export default class TensorMath {
     return result;
   }
 
-  // static sumSquaredError(label, prediction) {
-  //   let sub = TensorMath.subtract(label, prediction);
-  //   let sqr = TensorMath.square(sub);
-  //   return TensorMath.reduceSum(sqr, -1);
-  // }
-
   static subtract(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new SubtractOp(left, right, result));
     return result;
   }
+
+  // static sumSquaredError(label, prediction) {
+  //   let sub = TensorMath.subtract(label, prediction);
+  //   let sqr = TensorMath.square(sub);
+  //   return TensorMath.reduceSum(sqr, -1);
+  // }
 
   static tan(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -778,6 +787,18 @@ export default class TensorMath {
       shape[i] *= repeats[i];
     }
     return tile.reshape(shape);
+  }
+
+  static truncDiv(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new TruncDivOp(left, right, result));
+    return result;
+  }
+
+  static truncMod(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new TruncModOp(left, right, result));
+    return result;
   }
 
 }

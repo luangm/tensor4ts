@@ -1,6 +1,6 @@
-import {Tensor, TensorMath} from '../src/index';
+import {Tensor, TensorMath} from "../src/index";
 
-test('add', function () {
+test("add", function () {
   let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
   let y = Tensor.create([[2, 3, 4], [5, 6, 7]]);
   let z = x.add(y);
@@ -10,7 +10,7 @@ test('add', function () {
   expect(z).not.toBe(x);
 });
 
-test('addi', function () {
+test("addi", function () {
   let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
   let y = Tensor.create([[2, 3, 4], [5, 6, 7]]);
   let z = x.addi(y);
@@ -20,7 +20,7 @@ test('addi', function () {
   expect(z).toBe(x);
 });
 
-test('addi - broadcast', function () {
+test("addi - broadcast", function () {
   let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
   let y = Tensor.create([[2], [3]]);
   let z = x.addi(y);
@@ -30,7 +30,7 @@ test('addi - broadcast', function () {
   expect(z).toBe(x);
 });
 
-test('add - broadcast', function () {
+test("add - broadcast", function () {
   let x = Tensor.create([[1, 2, 3]]);
   let y = Tensor.create([[2], [3]]);
   let z = x.add(y);
@@ -39,7 +39,7 @@ test('add - broadcast', function () {
   expect(z).toEqual(expected);
 });
 
-test('add vector', function () {
+test("add vector", function () {
   let x = Tensor.create([1, 2, 3]);
   let y = Tensor.create([4, 5, 6]);
   let z = x.add(y);
@@ -48,7 +48,7 @@ test('add vector', function () {
   expect(z).toEqual(expected);
 });
 
-test('scalar add', function () {
+test("scalar add", function () {
   let x = Tensor.create(3);
   let y = Tensor.create(5);
   let z = x.add(y);
@@ -57,7 +57,7 @@ test('scalar add', function () {
   expect(z).toEqual(expected);
 });
 
-test('vector add scalar', function () {
+test("vector add scalar", function () {
   let x = Tensor.create([1, 2, 3]);
   let y = Tensor.create(5);
   let z = x.add(y);
@@ -66,7 +66,7 @@ test('vector add scalar', function () {
   expect(z).toEqual(expected);
 });
 
-test('matrix add scalar', function () {
+test("matrix add scalar", function () {
   let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
   let y = Tensor.create(5);
   let z = x.add(y);
@@ -75,7 +75,7 @@ test('matrix add scalar', function () {
   expect(z).toEqual(expected);
 });
 
-test('matrix add vector', function () {
+test("matrix add vector", function () {
   let x = Tensor.create([[1, 2, 3], [4, 5, 6]]);
   let y = Tensor.create([1, 2, 3]);
   let z = x.add(y);
@@ -84,7 +84,7 @@ test('matrix add vector', function () {
   expect(z).toEqual(expected);
 });
 
-test('matrix add vector2', function () {
+test("matrix add vector2", function () {
   let x = Tensor.create([[1, 2]]); // 1x2
   let y = Tensor.create([2, 3]); // 2
   let z = x.add(y);
@@ -93,7 +93,7 @@ test('matrix add vector2', function () {
   expect(z).toEqual(expected);
 });
 
-test('3d add scalar', function () {
+test("3d add scalar", function () {
   let x = Tensor.create([[[1, 2, 3], [4, 5, 6]]]);
   let y = Tensor.create(2);
   let z = x.add(y);
@@ -102,7 +102,7 @@ test('3d add scalar', function () {
   expect(z).toEqual(expected);
 });
 
-test('3d add vector', function () {
+test("3d add vector", function () {
   let x = Tensor.create([[[1, 2, 3], [4, 5, 6]]]);
   let y = Tensor.create([1, 2, 3]);
   let z = x.add(y);
@@ -112,7 +112,7 @@ test('3d add vector', function () {
 });
 
 // TODO: BUG - This SHOULD throw error since not possible.
-test('addi - throw error', function () {
+test("addi - throw error", function () {
   let x = Tensor.create([[1, 2, 3]]);
   let y = Tensor.create([[2], [3]]);
   let z = x.addi(y);
@@ -120,7 +120,7 @@ test('addi - throw error', function () {
   throw new Error();
 });
 
-test('subtract', function () {
+test("subtract", function () {
   let x = Tensor.create([1, 2, 3, 4, 5, 6]).reshape([2, 3]);
   let y = Tensor.create([2, 4, 6, 3, 1, 2]).reshape([2, 3]);
   let z = x.subtract(y);
@@ -129,7 +129,7 @@ test('subtract', function () {
   expect(z).toEqual(expected);
 });
 
-test('multiply', function () {
+test("multiply", function () {
   let x = Tensor.create([1, 2, 3, 4, 5, 6]).reshape([2, 3]);
   let y = Tensor.create([2, 4, 6, 3, 1, 2]).reshape([2, 3]);
   let z = x.multiply(y);
@@ -138,7 +138,7 @@ test('multiply', function () {
   expect(z).toEqual(expected);
 });
 
-test('divide', function () {
+test("divide", function () {
   let x = Tensor.create([1, 2, 3, 4, 5, 6]).reshape([2, 3]);
   let y = Tensor.create([2, 4, 6, 3, 1, 2]).reshape([2, 3]);
   let z = x.divide(y);
@@ -147,7 +147,7 @@ test('divide', function () {
   expect(z).toEqual(expected);
 });
 
-test('max', function () {
+test("max", function () {
   let x = Tensor.create([1, 2, 3, 4, 5, 6]).reshape([2, 3]);
   let y = Tensor.create([2, 4, 6, 3, 1, 2]).reshape([2, 3]);
   let z = TensorMath.max(x, y);
@@ -156,7 +156,7 @@ test('max', function () {
   expect(z).toEqual(expected);
 });
 
-test('max - with broadcast', function () {
+test("max - with broadcast", function () {
   let x = Tensor.create([1, 2, 3]).reshape([1, 3]);
   let y = Tensor.create([2, 4]).reshape([2, 1]);
   let z = TensorMath.max(x, y);
@@ -165,7 +165,7 @@ test('max - with broadcast', function () {
   expect(z).toEqual(expected);
 });
 
-test('min - with broadcast', function () {
+test("min - with broadcast", function () {
   let x = Tensor.create([1, 2, 3]).reshape([1, 3]);
   let y = Tensor.create([2, 4]).reshape([2, 1]);
   let z = TensorMath.min(x, y);
@@ -174,20 +174,58 @@ test('min - with broadcast', function () {
   expect(z).toEqual(expected);
 });
 
-test('mod - with broadcast', function () {
+test("mod - with broadcast", function () {
   let x = Tensor.create([5, 6, 7]).reshape([1, 3]);
   let y = Tensor.create([2, 4]).reshape([2, 1]);
-  let z = x.mod(y);
+  let z = x.floorMod(y);
   let expected = Tensor.create([[1, 0, 1], [1, 2, 3]]);
 
   expect(z).toEqual(expected);
 });
 
-test('mm', function () {
+test("mm", function () {
   let x = Tensor.create([[1, 2, 3], [2, 3, 4]]); // 2x3
   let y = Tensor.create([[2, 3], [3, 4], [1, 1]]); // 3x2
   let z = x.matmul(y);
-  let expected = Tensor.create([[11, 14], [4+9+4, 6+12+4]]);
+  let expected = Tensor.create([[11, 14], [4 + 9 + 4, 6 + 12 + 4]]);
+
+  expect(z).toEqual(expected);
+});
+
+test("floor mod", function () {
+  let x = Tensor.create([1.1, -2, 3, -5, 4, -5]);
+  let y = Tensor.create([0.6, 3, 1, -1.1, -3, -4]);
+  let z = x.floorMod(y);
+  let k = -0.5999999046325684;
+  let expected = Tensor.create([0.5, 1, 0, k, -2, -1]);
+
+  expect(z).toEqual(expected);
+});
+
+test("trunc mod", function () {
+  let x = Tensor.create([1.1, -2, 3, -5, 4, -5]);
+  let y = Tensor.create([0.6, 3, 1, -1.1, -3, -4]);
+  let z = x.truncMod(y);
+  let k = -0.5999999046325684;
+  let expected = Tensor.create([0.5, -2, 0, k, 1, -1]);
+
+  expect(z).toEqual(expected);
+});
+
+test("floor div", function () {
+  let x = Tensor.create([1.1, -2, 3, -5, 4, -5]);
+  let y = Tensor.create([0.6, 3, 1, -1.1, -3, -4]);
+  let z = x.floorDiv(y);
+  let expected = Tensor.create([1, -1, 3, 4, -2, 1]);
+
+  expect(z).toEqual(expected);
+});
+
+test("trunc div", function () {
+  let x = Tensor.create([1.1, -2, 3, -5, 4, -5]);
+  let y = Tensor.create([0.6, 3, 1, -1.1, -3, -4]);
+  let z = x.truncDiv(y);
+  let expected = Tensor.create([1, -0, 3, 4, -1, 1]);
 
   expect(z).toEqual(expected);
 });

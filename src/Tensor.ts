@@ -151,6 +151,14 @@ export default class Tensor {
     return TensorMath.floor(this);
   }
 
+  floorDiv(other: Tensor): Tensor {
+    return TensorMath.floorDiv(this, other);
+  }
+
+  floorMod(other: Tensor): Tensor {
+    return TensorMath.floorMod(this, other);
+  }
+
   floori(): Tensor {
     return TensorMath.floor(this, this);
   }
@@ -181,10 +189,6 @@ export default class Tensor {
 
   matmul(other: Tensor): Tensor {
     return TensorMath.matmul(this, other);
-  }
-
-  mod(other: Tensor): Tensor {
-    return TensorMath.mod(this, other);
   }
 
   multiply(other: Tensor): Tensor {
@@ -299,4 +303,13 @@ export default class Tensor {
   toString() {
     return Tensor.tensorFormat.format(this);
   }
+
+  truncDiv(other: Tensor): Tensor {
+    return TensorMath.truncDiv(this, other);
+  }
+
+  truncMod(other: Tensor): Tensor {
+    return TensorMath.truncMod(this, other);
+  }
+
 }
