@@ -65,6 +65,7 @@ import TanhOp from "./op/transform/TanhOp";
 import TanOp from "./op/transform/TanOp";
 import Tensor from "./Tensor";
 import ShapeUtils from "./utils/ShapeUtils";
+import EluGradOp from "./op/transform/EluGradOp";
 
 export default class TensorMath {
 
@@ -233,6 +234,12 @@ export default class TensorMath {
   static elu(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new EluOp(base, result));
+    return result;
+  }
+
+  static eluGrad(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new EluGradOp(base, result));
     return result;
   }
 
