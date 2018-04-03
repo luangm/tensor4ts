@@ -9,6 +9,8 @@ import ReductionExecutor from "./ReductionExecutor";
 import TransformExecutor from "./TransformExecutor";
 import IndexExecutor from "./IndexExecutor";
 import ComparisonExecutor from "./ComparisonExecutor";
+import ConditionalOp from "../op/ternary/ConditionalOp";
+import ConditionalExecutor from "./ConditionalExecutor";
 
 /**
  * Executor class is used to execute Ops
@@ -27,6 +29,11 @@ export class Executor {
 
     if (op.isSpecial) {
       op.exec();
+      return;
+    }
+
+    if (op instanceof ConditionalOp) {
+      ConditionalExecutor.exec(op);
       return;
     }
 

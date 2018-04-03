@@ -5,6 +5,7 @@ export default class ConditionalOp extends Operation {
 
   private readonly _condition: Tensor;
   private readonly _falsy: Tensor;
+  private readonly _result: Tensor;
   private readonly _truthy: Tensor;
 
   get condition() {
@@ -13,6 +14,10 @@ export default class ConditionalOp extends Operation {
 
   get falsy() {
     return this._falsy;
+  }
+
+  get result() {
+    return this._result;
   }
 
   get truthy() {
@@ -24,6 +29,7 @@ export default class ConditionalOp extends Operation {
     this._condition = condition;
     this._truthy = truthy;
     this._falsy = falsy;
+    this._result = result;
   }
 
   body(c: number, a: number, b: number): number {

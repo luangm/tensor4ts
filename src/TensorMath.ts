@@ -72,6 +72,7 @@ import GreaterEqualOp from "./op/comparison/GreaterEqualOp";
 import LessEqualOp from "./op/comparison/LessEqualOp";
 import LessOp from "./op/comparison/LessOp";
 import NotEqualOp from "./op/comparison/NotEqualOp";
+import ConditionalOp from "./op/ternary/ConditionalOp";
 
 export default class TensorMath {
 
@@ -203,15 +204,15 @@ export default class TensorMath {
   //   // return transposed;
   // }
 
-  static cos(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CosOp(base, result));
+  static conditional(condition: Tensor, truthy: Tensor, falsy: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(condition.shape);
+    Executor.exec(new ConditionalOp(condition, truthy, falsy, result));
     return result;
   }
 
-  static cosh(base: Tensor, result?: Tensor): Tensor {
+  static cos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CoshOp(base, result));
+    Executor.exec(new CosOp(base, result));
     return result;
   }
 
@@ -231,6 +232,12 @@ export default class TensorMath {
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
   // }
+
+  static cosh(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new CoshOp(base, result));
+    return result;
+  }
 
   static divide(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
