@@ -80,13 +80,9 @@ export default class ShapeUtils {
   }
 
   /**
-   * Get the indices that are reduced, return null if one of the indices is not reduced.
-   *
-   * @param {[int]} a - shape1
-   * @param {[int]} b - shape2
-   * @return {{left: [int]|null, right: [int]|null}}
+   * Get the indices that are reduced, return undefined if one of the indices is not reduced.
    */
-  static getReductionIndices(a: number[], b: number[]): { left: number[] | null, right: number[] | null } {
+  static getReductionIndices(a: number[], b: number[]): { left: number[] | undefined, right: number[] | undefined } {
     let resultShape = ShapeUtils.broadcastShapes(a, b);
     let left = [];
     let right = [];
@@ -101,8 +97,8 @@ export default class ShapeUtils {
     }
 
     return {
-      left: left.length > 0 ? left : null,
-      right: right.length > 0 ? right : null
+      left: left.length > 0 ? left : undefined,
+      right: right.length > 0 ? right : undefined
     };
   }
 
