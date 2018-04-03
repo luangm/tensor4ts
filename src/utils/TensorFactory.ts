@@ -58,6 +58,12 @@ export default class TensorFactory {
     return new Tensor(data, shape);
   }
 
+  static sparseZeros(shape: number[]): Tensor {
+    let shapeObj = new Shape(shape);
+    let data = new Float32Array(0);
+    return new Tensor(data, shapeObj, 0, true);
+  }
+
   static zeros(shape: number[]): Tensor {
     let shapeObj = new Shape(shape);
     let data = new Float32Array(shapeObj.length);

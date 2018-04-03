@@ -21,16 +21,22 @@ export class PairwiseExecutor {
   }
 
   private exec0Scalar(op: PairwiseOp): void {
-    let input = op.left.data;
-    let other = op.right.data;
+    let left = op.left.data;
+    let right = op.right.data;
     let result = op.result.data;
+    let leftZeros = op.left.isZeros;
+    let rightZeros = op.right.isZeros;
 
-    result[0] = op.body(input[0], other[0]);
+    let a = leftZeros ? 0 : left[0];
+    let b = rightZeros ? 0: right[0];
+    result[0] = op.body(a, b);
   }
 
   private exec1Vector(op: PairwiseOp): void {
     let result = op.result.data;
     let shape = op.result.shape;
+    let leftZeros = op.left.isZeros;
+    let rightZeros = op.right.isZeros;
 
     let inputBroadShape = ShapeUtils.getBroadcastedShape(op.left.shape, shape);
     let otherBroadShape = ShapeUtils.getBroadcastedShape(op.right.shape, shape);
@@ -51,7 +57,9 @@ export class PairwiseExecutor {
     let rPtr = 0;
 
     for (let i = 0; i < s0; i++) {
-      result[rPtr] = op.body(input[iPtr], other[oPtr]);
+      let a = leftZeros ? 0 : input[iPtr];
+      let b = rightZeros ? 0: other[oPtr];
+      result[rPtr] = op.body(a, b);
       iPtr = (iPtr + inputS0) | 0;
       oPtr = (oPtr + otherS0) | 0;
       rPtr = (rPtr + resultS0) | 0;
@@ -62,6 +70,8 @@ export class PairwiseExecutor {
 
     let result = op.result.data;
     let shape = op.result.shape;
+    let leftZeros = op.left.isZeros;
+    let rightZeros = op.right.isZeros;
 
     let inputBroadShape = ShapeUtils.getBroadcastedShape(op.left.shape, shape);
     let otherBroadShape = ShapeUtils.getBroadcastedShape(op.right.shape, shape);
@@ -96,7 +106,10 @@ export class PairwiseExecutor {
     for (let i = 0; i < s0; i++) {
 
       for (let j = 0; j < s1; j++) {
-        result[rPtr] = op.body(input[iPtr], other[oPtr]);
+        let a = leftZeros ? 0 : input[iPtr];
+        let b = rightZeros ? 0: other[oPtr];
+        result[rPtr] = op.body(a, b);
+        // result[rPtr] = op.body(input[iPtr], other[oPtr]);
         iPtr = (iPtr + inputD1) | 0;
         oPtr = (oPtr + otherD1) | 0;
         rPtr = (rPtr + resultD1) | 0;
@@ -112,18 +125,21 @@ export class PairwiseExecutor {
     let result = op.result.data;
     let shape = op.result.shape;
 
-    let inputBroadShape = ShapeUtils.getBroadcastedShape(op.left.shape, shape);
-    let otherBroadShape = ShapeUtils.getBroadcastedShape(op.right.shape, shape);
+    let leftZeros = op.left.isZeros;
+    let rightZeros = op.right.isZeros;
 
-    let inputReshaped = op.left.reshape(inputBroadShape);
-    let otherReshaped = op.right.reshape(otherBroadShape);
+    let leftShape = ShapeUtils.getBroadcastedShape(op.left.shape, shape);
+    let rightShape = ShapeUtils.getBroadcastedShape(op.right.shape, shape);
 
-    let input = inputReshaped.data;
-    let other = otherReshaped.data;
+    let leftReshaped = op.left.reshape(leftShape);
+    let rightReshaped = op.right.reshape(rightShape);
 
-    let inputPointer = 0;
-    let otherPointer = 0;
-    let resultPointer = 0;
+    let left = leftReshaped.data;
+    let right = rightReshaped.data;
+
+    let leftPtr = 0;
+    let rightPtr = 0;
+    let resultPtr = 0;
 
     let rank = shape.length | 0;
 
@@ -138,8 +154,8 @@ export class PairwiseExecutor {
     for (let i = 0; i < rank; i++) {
       let r = rank - 1 - i;
       MEM.push(shape[r]);
-      iS[i] = (inputBroadShape[r] === 1 ? 0 : inputReshaped.strides[r]) | 0;
-      oS[i] = (otherBroadShape[r] === 1 ? 0 : otherReshaped.strides[r]) | 0;
+      iS[i] = (leftShape[r] === 1 ? 0 : leftReshaped.strides[r]) | 0;
+      oS[i] = (rightShape[r] === 1 ? 0 : rightReshaped.strides[r]) | 0;
       rS[i] = op.result.strides[r] | 0;
       MEM.push(iS[i] - (i > 0 ? iS[i - 1] * shape[rank - i] : 0));
       MEM.push(oS[i] - (i > 0 ? oS[i - 1] * shape[rank - i] : 0));
@@ -153,19 +169,22 @@ export class PairwiseExecutor {
       index = 0;
       MEM[0] = (MEM[0] + 1) | 0;
 
-      result[resultPointer] = op.body(input[inputPointer], other[otherPointer]);
-      inputPointer = (inputPointer + MEM[ptr + 1]) | 0;
-      otherPointer = (otherPointer + MEM[ptr + 2]) | 0;
-      resultPointer = (resultPointer + MEM[ptr + 3]) | 0;
+      let a = leftZeros ? 0 : left[leftPtr];
+      let b = rightZeros ? 0: right[rightPtr];
+      result[resultPtr] = op.body(a, b);
+
+      leftPtr = (leftPtr + MEM[ptr + 1]) | 0;
+      rightPtr = (rightPtr + MEM[ptr + 2]) | 0;
+      resultPtr = (resultPtr + MEM[ptr + 3]) | 0;
 
       while (MEM[index] === MEM[ptr] && index < rank - 1) {
         MEM[index] = 0;
         index = (index + 1) | 0;
         MEM[index] = (MEM[index] + 1) | 0;
         ptr = (ptr + 4) | 0;
-        inputPointer = (inputPointer + MEM[ptr + 1]) | 0;
-        otherPointer = (otherPointer + MEM[ptr + 2]) | 0;
-        resultPointer = (resultPointer + MEM[ptr + 3]) | 0;
+        leftPtr = (leftPtr + MEM[ptr + 1]) | 0;
+        rightPtr = (rightPtr + MEM[ptr + 2]) | 0;
+        resultPtr = (resultPtr + MEM[ptr + 3]) | 0;
       }
     }
   }
