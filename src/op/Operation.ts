@@ -2,23 +2,24 @@ import Tensor from "../Tensor";
 
 export default abstract class Operation {
 
-  private _input: Tensor;
+  private readonly _input: Tensor;
+  private readonly _other: Tensor;
+  private readonly _result: Tensor;
+
   get input() {
     return this._input;
   }
 
-  private _other: Tensor;
+  get isSpecial() {
+    return false;
+  }
+
   get other() {
     return this._other;
   }
 
-  private _result: Tensor;
   get result() {
     return this._result;
-  }
-
-  get isSpecial() {
-    return false;
   }
 
   constructor(input: Tensor, other: Tensor, result: Tensor) {

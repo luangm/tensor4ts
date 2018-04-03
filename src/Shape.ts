@@ -2,12 +2,12 @@ import ShapeUtils from "./utils/ShapeUtils";
 
 export default class Shape {
 
-  private _length: number;
-  private _order: string;
-  private _rank: number;
-  private _shape: number[];
-  private _shapeStrides: number[];
-  private _strides: number[];
+  private readonly _length: number;
+  private readonly _order: string;
+  private readonly _rank: number;
+  private readonly _shape: number[];
+  private readonly _shapeStrides: number[];
+  private readonly _strides: number[];
 
   get length() {
     return this._length;
@@ -29,7 +29,7 @@ export default class Shape {
     return this._strides;
   }
 
-  constructor(shape: number[], strides?: number[], order: string = 'c') {
+  constructor(shape: number[], strides?: number[], order: string = "c") {
     this._shape = shape;
     this._rank = shape.length;
     this._shapeStrides = ShapeUtils.getStrides(shape);

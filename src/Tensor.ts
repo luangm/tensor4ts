@@ -135,6 +135,10 @@ export default class Tensor {
     return TensorMath.divide(this, other, this);
   }
 
+  equal(other: Tensor): Tensor {
+    return TensorMath.equal(this, other);
+  }
+
   fill(scalar: number): Tensor {
     return TensorMath.fill(this, scalar);
   }
@@ -159,6 +163,22 @@ export default class Tensor {
     return this._data[offset];
   }
 
+  greater(other: Tensor): Tensor {
+    return TensorMath.greater(this, other);
+  }
+
+  greaterEqual(other: Tensor): Tensor {
+    return TensorMath.greaterEqual(this, other);
+  }
+
+  less(other: Tensor): Tensor {
+    return TensorMath.less(this, other);
+  }
+
+  lessEqual(other: Tensor): Tensor {
+    return TensorMath.lessEqual(this, other);
+  }
+
   matmul(other: Tensor): Tensor {
     return TensorMath.matmul(this, other);
   }
@@ -177,6 +197,10 @@ export default class Tensor {
 
   negatei() {
     return TensorMath.negate(this, this);
+  }
+
+  notEqual(other: Tensor): Tensor {
+    return TensorMath.notEqual(this, other);
   }
 
   reciprocal(): Tensor {

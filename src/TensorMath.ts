@@ -66,6 +66,12 @@ import TanOp from "./op/transform/TanOp";
 import Tensor from "./Tensor";
 import ShapeUtils from "./utils/ShapeUtils";
 import EluGradOp from "./op/transform/EluGradOp";
+import GreaterOp from "./op/comparison/GreaterOp";
+import EqualOp from "./op/comparison/EqualOp";
+import GreaterEqualOp from "./op/comparison/GreaterEqualOp";
+import LessEqualOp from "./op/comparison/LessEqualOp";
+import LessOp from "./op/comparison/LessOp";
+import NotEqualOp from "./op/comparison/NotEqualOp";
 
 export default class TensorMath {
 
@@ -153,23 +159,6 @@ export default class TensorMath {
     return result;
   }
 
-  // static conv2dImageGrad(image, kernel, grad) {
-  //   let numKernels = kernel.shape[0];
-  //
-  //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
-  //   let kReshape = kernel.reshape([numKernels, kernel.length / numKernels]);
-  //   let col = TensorMath.matmul(kReshape, gradReshape, true, false);
-  //
-  //   return TensorUtils.col2im(col, image, kernel).reshape(image.shape);
-  // }
-  //
-  // static conv2dKernelGrad(image, kernel, grad) {
-  //   let numKernels = kernel.shape[0];
-  //   let xCol = TensorUtils.im2col(image, kernel);
-  //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
-  //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
-  // }
-
   static atanh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new AtanhOp(base, result));
@@ -225,6 +214,23 @@ export default class TensorMath {
     return result;
   }
 
+  // static conv2dImageGrad(image, kernel, grad) {
+  //   let numKernels = kernel.shape[0];
+  //
+  //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
+  //   let kReshape = kernel.reshape([numKernels, kernel.length / numKernels]);
+  //   let col = TensorMath.matmul(kReshape, gradReshape, true, false);
+  //
+  //   return TensorUtils.col2im(col, image, kernel).reshape(image.shape);
+  // }
+  //
+  // static conv2dKernelGrad(image, kernel, grad) {
+  //   let numKernels = kernel.shape[0];
+  //   let xCol = TensorUtils.im2col(image, kernel);
+  //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
+  //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
+  // }
+
   static divide(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new DivideOp(left, right, result));
@@ -240,6 +246,12 @@ export default class TensorMath {
   static eluGrad(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new EluGradOp(base, result));
+    return result;
+  }
+
+  static equal(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new EqualOp(left, right, result));
     return result;
   }
 
@@ -264,6 +276,18 @@ export default class TensorMath {
   static floor(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new FloorOp(base, result));
+    return result;
+  }
+
+  static greater(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new GreaterOp(left, right, result));
+    return result;
+  }
+
+  static greaterEqual(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new GreaterEqualOp(left, right, result));
     return result;
   }
 
@@ -294,36 +318,6 @@ export default class TensorMath {
 
     return result;
   }
-
-  // static maxPool(image, kernelShape, strideWidth, strideHeight) {
-  //
-  //   let numImages = image.shape[0];
-  //   let channels = image.shape[1];
-  //   let height = image.shape[2]; // rows
-  //   let width = image.shape[3]; // cols
-  //
-  //   let numKernels = kernelShape[0];
-  //   let kernelChannels = kernelShape[1];
-  //   let kernelHeight = kernelShape[2]; // rows
-  //   let kernelWidth = kernelShape[3]; // cols
-  //
-  //   let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, 0, strideHeight);
-  //   let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, 0, strideWidth);
-  //
-  //   let xCol = TensorUtils.im2col(image, kernelShape, {strideWidth, strideHeight});
-  //   let max = TensorMath.reduceMax(xCol, 0);
-  //   let result = max.reshape([numImages, channels, outputHeight, outputWidth]);
-  //   return result;
-  // }
-  //
-  // static maxPoolGrad(image, kernel, grad, {strideWidth, strideHeight}) {
-  //   let xCol = TensorUtils.im2col(image, kernel.shape, {strideWidth, strideHeight});
-  //   let argmax = TensorMath.argMax(xCol, 0);
-  //   let gradReshape = grad.reshape([1, grad.length]);
-  //   let set = TensorMath.argSet(gradReshape, argmax, xCol.shape, 0);
-  //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
-  //   return result;
-  // }
 
   static infNorm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
@@ -361,6 +355,48 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
+  // static maxPool(image, kernelShape, strideWidth, strideHeight) {
+  //
+  //   let numImages = image.shape[0];
+  //   let channels = image.shape[1];
+  //   let height = image.shape[2]; // rows
+  //   let width = image.shape[3]; // cols
+  //
+  //   let numKernels = kernelShape[0];
+  //   let kernelChannels = kernelShape[1];
+  //   let kernelHeight = kernelShape[2]; // rows
+  //   let kernelWidth = kernelShape[3]; // cols
+  //
+  //   let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, 0, strideHeight);
+  //   let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, 0, strideWidth);
+  //
+  //   let xCol = TensorUtils.im2col(image, kernelShape, {strideWidth, strideHeight});
+  //   let max = TensorMath.reduceMax(xCol, 0);
+  //   let result = max.reshape([numImages, channels, outputHeight, outputWidth]);
+  //   return result;
+  // }
+  //
+  // static maxPoolGrad(image, kernel, grad, {strideWidth, strideHeight}) {
+  //   let xCol = TensorUtils.im2col(image, kernel.shape, {strideWidth, strideHeight});
+  //   let argmax = TensorMath.argMax(xCol, 0);
+  //   let gradReshape = grad.reshape([1, grad.length]);
+  //   let set = TensorMath.argSet(gradReshape, argmax, xCol.shape, 0);
+  //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
+  //   return result;
+  // }
+
+  static less(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new LessOp(left, right, result));
+    return result;
+  }
+
+  static lessEqual(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new LessEqualOp(left, right, result));
+    return result;
+  }
+
   static linspace(base: Tensor, start: number, stop: number = 0, num: number, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new LinspaceOp(base, null, result, start, stop, num));
@@ -381,7 +417,7 @@ export default class TensorMath {
 
   static matmul(left: Tensor, right: Tensor, transposeLeft = false, transposeRight = false, result?: Tensor): Tensor {
     if (left.rank !== 2 || right.rank !== 2) {
-      throw new Error('Invalid Operation, Rank of left and right must be 2');
+      throw new Error("Invalid Operation, Rank of left and right must be 2");
     }
 
     let shape = [0, 0];
@@ -419,6 +455,12 @@ export default class TensorMath {
   static negate(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new NegateOp(base, result));
+    return result;
+  }
+
+  static notEqual(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new NotEqualOp(left, right, result));
     return result;
   }
 
