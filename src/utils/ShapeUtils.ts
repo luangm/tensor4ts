@@ -84,14 +84,18 @@ export default class ShapeUtils {
    */
   static getReductionIndices(a: number[], b: number[]): { left: number[] | undefined, right: number[] | undefined } {
     let resultShape = ShapeUtils.broadcastShapes(a, b);
+
+    let aBroad = ShapeUtils.getBroadcastedShape(a, resultShape);
+    let bBroad = ShapeUtils.getBroadcastedShape(b, resultShape);
+
     let left = [];
     let right = [];
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] === 1 && a[i] !== resultShape[i]) {
+    for (let i = 0; i < resultShape.length; i++) {
+      if (aBroad[i] === 1 && aBroad[i] !== resultShape[i]) {
         left.push(i);
       }
 
-      if (b[i] === 1 && b[i] !== resultShape[i]) {
+      if (bBroad[i] === 1 && bBroad[i] !== resultShape[i]) {
         right.push(i);
       }
     }
