@@ -185,19 +185,6 @@ test("square", function () {
   expect(z).toEqual(expected);
 });
 
-test("power 2", function () {
-  let x = Tensor.create([-1, -2, 1, 2]);
-  let z = TensorMath.pow(x, 2);
-  let expected = Tensor.create([1, 4, 1, 4]);
-  expect(z).toEqual(expected);
-});
-
-test("power 3", function () {
-  let x = Tensor.create([-1, -2, 1, 2]);
-  let z = TensorMath.pow(x, 3);
-  let expected = Tensor.create([-1, -8, 1, 8]);
-  expect(z).toEqual(expected);
-});
 
 test("floor", function () {
   let x = Tensor.create([-1.1, -2.1, 1.1, 2.1]);

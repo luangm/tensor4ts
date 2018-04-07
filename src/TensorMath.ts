@@ -41,7 +41,7 @@ import FloorOp from "./op/transform/FloorOp";
 import Log1pOp from "./op/transform/Log1pOp";
 import LogOp from "./op/transform/LogOp";
 import NegateOp from "./op/transform/NegateOp";
-import PowerOp from "./op/transform/PowerOp";
+import PowerOp from "./op/pairwise/PowerOp";
 import RandomOp from "./op/transform/RandomOp";
 import ReciprocalGradOp from "./op/transform/ReciprocalGradOp";
 import ReciprocalOp from "./op/transform/ReciprocalOp";
@@ -149,6 +149,12 @@ export default class TensorMath {
     return result;
   }
 
+  static asinh(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new AsinhOp(base, result));
+    return result;
+  }
+
   // TODO
   // static argSet(source: Tensor, args: number, shape: number, dim: number): Tensor {
   //   // let result = new Tensor({shape: shape});
@@ -157,12 +163,6 @@ export default class TensorMath {
   //   // return result;
   //   return null;
   // }
-
-  static asinh(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AsinhOp(base, result));
-    return result;
-  }
 
   static atan(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -194,6 +194,12 @@ export default class TensorMath {
     return result;
   }
 
+  static cos(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new CosOp(base, result));
+    return result;
+  }
+
   // TODO
   // static conv2d(image: Tensor, kernel: Tensor): Tensor {
   //   return null;
@@ -219,15 +225,15 @@ export default class TensorMath {
   //   // return transposed;
   // }
 
-  static cos(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CosOp(base, result));
-    return result;
-  }
-
   static cosh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new CoshOp(base, result));
+    return result;
+  }
+
+  static divide(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new DivideOp(left, right, result));
     return result;
   }
 
@@ -247,12 +253,6 @@ export default class TensorMath {
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
   // }
-
-  static divide(left: Tensor, right: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
-    Executor.exec(new DivideOp(left, right, result));
-    return result;
-  }
 
   static elu(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -402,6 +402,18 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
+  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
+
   // static maxPool(image, kernelShape, strideWidth, strideHeight) {
   //
   //   let numImages = image.shape[0];
@@ -431,18 +443,6 @@ export default class TensorMath {
   //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
   //   return result;
   // }
-
-  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
 
   static less(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
@@ -535,9 +535,9 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
-  static pow(base: Tensor, power: number = 1, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new PowerOp(base, result, power));
+  static pow(left: Tensor, right: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
+    Executor.exec(new PowerOp(left, right, result));
     return result;
   }
 
