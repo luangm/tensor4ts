@@ -76,6 +76,12 @@ import ConditionalOp from "./op/ternary/ConditionalOp";
 import TruncModOp from "./op/pairwise/TruncModOp";
 import FloorDivOp from "./op/pairwise/FloorDivOp";
 import TruncDivOp from "./op/pairwise/TruncDivOp";
+import ErfOp from "./op/transform/ErfOp";
+import ErfGradOp from "./op/transform/ErfGradOp";
+import ErfcOp from "./op/transform/ErfcOp";
+import ErfcGradOp from "./op/transform/ErfcGradOp";
+import GammaOp from "./op/transform/GammaOp";
+import LgammaOp from "./op/transform/LgammaOp";
 
 export default class TensorMath {
 
@@ -137,6 +143,12 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
+  static asin(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new AsinOp(base, result));
+    return result;
+  }
+
   // TODO
   // static argSet(source: Tensor, args: number, shape: number, dim: number): Tensor {
   //   // let result = new Tensor({shape: shape});
@@ -145,12 +157,6 @@ export default class TensorMath {
   //   // return result;
   //   return null;
   // }
-
-  static asin(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new AsinOp(base, result));
-    return result;
-  }
 
   static asinh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -182,6 +188,12 @@ export default class TensorMath {
     return result;
   }
 
+  static conditional(condition: Tensor, truthy: Tensor, falsy: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(condition.shape);
+    Executor.exec(new ConditionalOp(condition, truthy, falsy, result));
+    return result;
+  }
+
   // TODO
   // static conv2d(image: Tensor, kernel: Tensor): Tensor {
   //   return null;
@@ -207,15 +219,15 @@ export default class TensorMath {
   //   // return transposed;
   // }
 
-  static conditional(condition: Tensor, truthy: Tensor, falsy: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(condition.shape);
-    Executor.exec(new ConditionalOp(condition, truthy, falsy, result));
-    return result;
-  }
-
   static cos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new CosOp(base, result));
+    return result;
+  }
+
+  static cosh(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new CoshOp(base, result));
     return result;
   }
 
@@ -235,12 +247,6 @@ export default class TensorMath {
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
   // }
-
-  static cosh(base: Tensor, result?: Tensor): Tensor {
-    result = result || Tensor.zeros(base.shape);
-    Executor.exec(new CoshOp(base, result));
-    return result;
-  }
 
   static divide(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
@@ -263,6 +269,30 @@ export default class TensorMath {
   static equal(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new EqualOp(left, right, result));
+    return result;
+  }
+
+  static erf(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new ErfOp(base, result));
+    return result;
+  }
+
+  static erfGrad(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new ErfGradOp(base, result));
+    return result;
+  }
+
+  static erfc(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new ErfcOp(base, result));
+    return result;
+  }
+
+  static erfcGrad(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new ErfcGradOp(base, result));
     return result;
   }
 
@@ -299,6 +329,12 @@ export default class TensorMath {
   static floorMod(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new FloorModOp(left, right, result));
+    return result;
+  }
+
+  static gamma(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new GammaOp(base, result));
     return result;
   }
 
@@ -354,6 +390,18 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
+  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
+
   // static maxPool(image, kernelShape, strideWidth, strideHeight) {
   //
   //   let numImages = image.shape[0];
@@ -384,18 +432,6 @@ export default class TensorMath {
   //   return result;
   // }
 
-  static l1Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L1NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
   static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
@@ -417,6 +453,12 @@ export default class TensorMath {
   static lessEqual(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
     Executor.exec(new LessEqualOp(left, right, result));
+    return result;
+  }
+
+  static lgamma(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new LgammaOp(base, result));
     return result;
   }
 

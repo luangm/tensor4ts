@@ -139,6 +139,14 @@ export default class Tensor {
     return TensorMath.equal(this, other);
   }
 
+  erf(): Tensor {
+    return TensorMath.erf(this);
+  }
+
+  erfc(): Tensor {
+    return TensorMath.erfc(this);
+  }
+
   fill(scalar: number): Tensor {
     return TensorMath.fill(this, scalar);
   }
