@@ -19,10 +19,12 @@ export class IndexExecutor {
   private exec1Vector(op: IndexOp): void {
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
 
     let accum = op.body(input[0]);
     for (let i = 0; i < input.length; i++) {
-      let value = op.body(input[i]);
+      let a = isZeros ? 0 : input[i];
+      let value = op.body(a);
       let updated = op.update(accum, value, result[0], i);
       accum = updated[0];
       result[0] = updated[1];

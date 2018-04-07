@@ -20,15 +20,18 @@ export class TransformExecutor {
   private exec1Vector(op: TransformOp): void {
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
 
     for (let i = 0; i < result.length; i++) {
-      result[i] = op.body(input[i]);
+      let a = isZeros ? 0 : input[i];
+      result[i] = op.body(a);
     }
   }
 
   private exec2Matrix(op: TransformOp): void {
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
 
     let inputStrides = op.base.strides;
     let resultStrides = op.result.strides;
@@ -40,7 +43,8 @@ export class TransformExecutor {
         let inputPointer = i * inputStrides[0] + j * inputStrides[1];
         let resultPointer = i * resultStrides[0] + j * resultStrides[1];
 
-        result[resultPointer] = op.body(input[inputPointer]);
+        let a = isZeros ? 0 : input[inputPointer];
+        result[resultPointer] = op.body(a);
       }
     }
   }
@@ -50,6 +54,7 @@ export class TransformExecutor {
     let result = op.result.data;
     let shape = op.result.shape;
     let rank = shape.length | 0;
+    let isZeros = op.base.isZeros;
 
     let inputPointer = 0;
     let resultPointer = 0;
@@ -77,7 +82,9 @@ export class TransformExecutor {
       index = 0;
       MEM[0] = (MEM[0] + 1) | 0;
 
-      result[resultPointer] = op.body(input[inputPointer]);
+      let a = isZeros ? 0 : input[inputPointer];
+      result[resultPointer] = op.body(a);
+
       inputPointer = (inputPointer + MEM[ptr + 1]) | 0;
       resultPointer = (resultPointer + MEM[ptr + 2]) | 0;
 

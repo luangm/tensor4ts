@@ -3,6 +3,7 @@ import TensorMath from "./TensorMath";
 import TensorFactory from "./utils/TensorFactory";
 import TensorFormat from "./utils/TensorFormat";
 import TensorUtils from "./utils/TensorUtils";
+import ShapeUtils from "./utils/ShapeUtils";
 
 export default class Tensor {
 
@@ -11,6 +12,7 @@ export default class Tensor {
   private readonly _data: Float32Array;
   private readonly _offset: number;
   private readonly _shape: Shape;
+  private readonly _isZeros: boolean = false;
 
   get data() {
     return this._data;
@@ -52,10 +54,15 @@ export default class Tensor {
     return this._shape.strides;
   }
 
-  constructor(data: Float32Array, shape: Shape, offset = 0) {
+  get isZeros() {
+    return this._isZeros;
+  }
+
+  constructor(data: Float32Array, shape: Shape, offset: number = 0, isZeros: boolean = false) {
     this._data = data;
     this._shape = shape;
     this._offset = offset;
+    this._isZeros = isZeros;
   }
 
   /**
@@ -99,6 +106,10 @@ export default class Tensor {
     return TensorFactory.zeros(shape);
   }
 
+  static sparseZeros(shape: number[]): Tensor {
+    return TensorFactory.sparseZeros(shape);
+  }
+
   abs(): Tensor {
     return TensorMath.abs(this);
   }
@@ -112,6 +123,10 @@ export default class Tensor {
   }
 
   addi(other: Tensor): Tensor {
+    let broadShapes = ShapeUtils.broadcastShapes(this.shape, other.shape);
+    if (!ShapeUtils.shapeEquals(this.shape, broadShapes)) {
+      throw "this must be the same shape as result shape";
+    }
     return TensorMath.add(this, other, this);
   }
 
@@ -137,6 +152,10 @@ export default class Tensor {
 
   equal(other: Tensor): Tensor {
     return TensorMath.equal(this, other);
+  }
+
+  exp(): Tensor {
+    return TensorMath.exp(this);
   }
 
   erf(): Tensor {
@@ -167,11 +186,18 @@ export default class Tensor {
     return TensorMath.floorMod(this, other);
   }
 
+  log(): Tensor {
+    return TensorMath.log(this);
+  }
+
   floori(): Tensor {
     return TensorMath.floor(this, this);
   }
 
   get(indices: number | number[]): number {
+    if (this.isZeros) {
+      return 0;
+    }
     if (!Array.isArray(indices)) {
       indices = this._shape.getIndices(indices);
     }
@@ -297,7 +323,7 @@ export default class Tensor {
     }
 
     let shape = new Shape(newShape, newStrides, this._shape.order);
-    return new Tensor(this._data, shape, offset);
+    return new Tensor(this._data, shape, offset, this.isZeros);
   }
 
   subtract(other: Tensor): Tensor {

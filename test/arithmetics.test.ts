@@ -111,13 +111,10 @@ test("3d add vector", function () {
   expect(z).toEqual(expected);
 });
 
-// TODO: BUG - This SHOULD throw error since not possible.
 test("addi - throw error", function () {
   let x = Tensor.create([[1, 2, 3]]);
   let y = Tensor.create([[2], [3]]);
-  let z = x.addi(y);
-
-  throw new Error();
+  expect(() => x.addi(y)).toThrow();
 });
 
 test("subtract", function () {

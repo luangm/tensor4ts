@@ -23,12 +23,14 @@ export class ReductionExecutor {
   private exec1Vector(op: ReductionOp): void {
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
     }
 
     for (let i = 0; i < input.length; i++) {
-      let value = op.body(input[i]);
+      let a = isZeros ? 0 : input[i];
+      let value = op.body(a);
       result[0] = op.update(result[0], value);
     }
 
@@ -42,6 +44,8 @@ export class ReductionExecutor {
     let reducedDims = op.reducedDims;
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
+
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
     }
@@ -61,7 +65,8 @@ export class ReductionExecutor {
       for (let j = 0; j < s1; j++) {
         let inputPointer = i * is0 + j * is1;
         let resultPointer = i * rs0 + j * rs1;
-        let value = op.body(input[inputPointer]);
+        let a = isZeros ? 0 : input[inputPointer];
+        let value = op.body(a);
         result[resultPointer] = op.update(result[resultPointer], value);
       }
     }
@@ -84,6 +89,8 @@ export class ReductionExecutor {
     let reducedDims = op.reducedDims;
     let input = op.base.data;
     let result = op.result.data;
+    let isZeros = op.base.isZeros;
+
     if (op.initialValue !== 0) {
       op.result.filli(op.initialValue);
     }
@@ -117,7 +124,8 @@ export class ReductionExecutor {
       index = 0;
       MEM[0] = (MEM[0] + 1) | 0;
 
-      let value = op.body(input[inputPointer]);
+      let a = isZeros ? 0 : input[inputPointer];
+      let value = op.body(a);
       result[resultPointer] = op.update(result[resultPointer], value);
       inputPointer = (inputPointer + MEM[ptr + 1]) | 0;
       resultPointer = (resultPointer + MEM[ptr + 2]) | 0;
