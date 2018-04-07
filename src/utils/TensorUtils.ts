@@ -16,7 +16,7 @@ export default class TensorUtils {
     let compatible = this.shapeIsCompatible(tensor.shape, shape);
 
     if (!compatible) {
-      throw new Error('Incompatible broadcast from ' + tensor.shape + ' to ' + shape);
+      throw new Error("Incompatible broadcast from " + tensor.shape + " to " + shape);
     }
 
     let retShape = ShapeUtils.broadcastShapes(tensor.shape, shape);
@@ -65,7 +65,6 @@ export default class TensorUtils {
 
     return result;
   }
-
 
   //
   // static computeConv2dShape(image, kernel) {
@@ -171,5 +170,20 @@ export default class TensorUtils {
     }
 
     return true;
+  }
+
+  static transpose(tensor: Tensor, newAxis: number[]): Tensor {
+    let rank = tensor.rank;
+    let newStrides = new Array(rank);
+    let newShape = new Array(rank);
+
+    for (let i = 0; i < rank; i++) {
+      let axis = newAxis[i];
+      newStrides[i] = tensor.strides[axis];
+      newShape[i] = tensor.shape[axis];
+    }
+
+    let shape = new Shape(newShape, newStrides);
+    return new Tensor(tensor.data, shape, tensor.offset, tensor.isZeros);
   }
 }

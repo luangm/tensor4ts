@@ -1,6 +1,6 @@
-import {Tensor, TensorMath} from '../src/index';
+import {Tensor, TensorMath} from "../src/index";
 
-test('im2col', function () {
+test("im2col", function () {
   let image = Tensor.linspace(1, 16, 16).reshape([1, 1, 4, 4]);
   let result = TensorMath.im2col(image, {
     kernelWidth: 2,
@@ -19,7 +19,7 @@ test('im2col', function () {
   expect(result).toEqual(expected);
 });
 
-test('col2im', function () {
+test("col2im", function () {
   let col = Tensor.create([
     [1, 2, 3, 5, 6, 7, 9, 10, 11],
     [2, 3, 4, 6, 7, 8, 10, 11, 12],
@@ -39,14 +39,14 @@ test('col2im', function () {
   let expected = Tensor.create([
     [1, 4, 6, 4],
     [10, 24, 28, 16],
-    [18, 40,44, 24],
+    [18, 40, 44, 24],
     [13, 28, 30, 16]
   ]).reshape([1, 1, 4, 4]);
 
   expect(image).toEqual(expected);
 });
 
-test('im2col - col2im', function () {
+test("im2col - col2im", function () {
   let image = Tensor.linspace(1, 16, 16).reshape([1, 1, 4, 4]);
   let col = TensorMath.im2col(image, {
     kernelWidth: 2,
@@ -72,5 +72,15 @@ test('im2col - col2im', function () {
 
   expect(image1).toEqual(image);
 
+  // expect(result).toEqual(expected);
+});
+
+test("conv2d", function () {
+  let image = Tensor.linspace(1, 9, 9).reshape([1, 1, 3, 3]);
+  let kernel = Tensor.linspace(1, 4, 4).reshape([1, 1, 2, 2]);
+
+  let result = TensorMath.conv2d(image, kernel, {strideWidth: 1, strideHeight: 1, padWidth: 1, padHeight: 1});
+
+  console.log(result.toString());
   // expect(result).toEqual(expected);
 });

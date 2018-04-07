@@ -82,6 +82,7 @@ import ErfcOp from "./op/transform/ErfcOp";
 import ErfcGradOp from "./op/transform/ErfcGradOp";
 import GammaOp from "./op/transform/GammaOp";
 import LgammaOp from "./op/transform/LgammaOp";
+import {Conv2dOptions, default as Conv2dOp} from "./op/cnn/Conv2dOp";
 
 export default class TensorMath {
 
@@ -194,36 +195,19 @@ export default class TensorMath {
     return result;
   }
 
+  static conv2d(image: Tensor, kernel: Tensor, options: Conv2dOptions, result?: Tensor): Tensor {
+    let shape = ShapeUtils.computeConv2dShape(image.shape, kernel.shape, options);
+    result = result || Tensor.zeros(shape);
+    let op = new Conv2dOp(image, kernel, options, result);
+    Executor.exec(op);
+    return op.result;
+  }
+
   static cos(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
     Executor.exec(new CosOp(base, result));
     return result;
   }
-
-  // TODO
-  // static conv2d(image: Tensor, kernel: Tensor): Tensor {
-  //   return null;
-  //   // let xCol = TensorUtils.im2col(image, kernel.shape);
-  //   //
-  //   // let numImages = image.shape[0];
-  //   // let channels = image.shape[1];
-  //   // let height = image.shape[2]; // rows
-  //   // let width = image.shape[3]; // cols
-  //   //
-  //   // let numKernels = kernel.shape[0];
-  //   // let kernelChannels = kernel.shape[1];
-  //   // let kernelHeight = kernel.shape[2]; // rows
-  //   // let kernelWidth = kernel.shape[3]; // cols
-  //   //
-  //   // let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight);
-  //   // let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth);
-  //   //
-  //   // let kCol = kernel.reshape([numKernels, kernelChannels * kernelWidth * kernelHeight]);
-  //   // let result = TensorMath.matmul(kCol, xCol);
-  //   // let reshaped = result.reshape([numKernels, numImages, outputHeight, outputWidth]);
-  //   // let transposed = reshaped.transpose([1, 0, 2, 3]);
-  //   // return transposed;
-  // }
 
   static cosh(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);

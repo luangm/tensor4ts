@@ -10,9 +10,9 @@ export default class Tensor {
   static tensorFormat: TensorFormat = new TensorFormat();
 
   private readonly _data: Float32Array;
+  private readonly _isZeros: boolean = false;
   private readonly _offset: number;
   private readonly _shape: Shape;
-  private readonly _isZeros: boolean = false;
 
   get data() {
     return this._data;
@@ -28,6 +28,10 @@ export default class Tensor {
 
   get isVector() {
     return this.rank === 1;
+  }
+
+  get isZeros() {
+    return this._isZeros;
   }
 
   get length() {
@@ -52,10 +56,6 @@ export default class Tensor {
 
   get strides() {
     return this._shape.strides;
-  }
-
-  get isZeros() {
-    return this._isZeros;
   }
 
   constructor(data: Float32Array, shape: Shape, offset: number = 0, isZeros: boolean = false) {
@@ -102,12 +102,12 @@ export default class Tensor {
     return TensorFactory.scalar(scalar);
   }
 
-  static zeros(shape: number[]): Tensor {
-    return TensorFactory.zeros(shape);
-  }
-
   static sparseZeros(shape: number[]): Tensor {
     return TensorFactory.sparseZeros(shape);
+  }
+
+  static zeros(shape: number[]): Tensor {
+    return TensorFactory.zeros(shape);
   }
 
   abs(): Tensor {
@@ -154,16 +154,16 @@ export default class Tensor {
     return TensorMath.equal(this, other);
   }
 
-  exp(): Tensor {
-    return TensorMath.exp(this);
-  }
-
   erf(): Tensor {
     return TensorMath.erf(this);
   }
 
   erfc(): Tensor {
     return TensorMath.erfc(this);
+  }
+
+  exp(): Tensor {
+    return TensorMath.exp(this);
   }
 
   fill(scalar: number): Tensor {
@@ -184,10 +184,6 @@ export default class Tensor {
 
   floorMod(other: Tensor): Tensor {
     return TensorMath.floorMod(this, other);
-  }
-
-  log(): Tensor {
-    return TensorMath.log(this);
   }
 
   floori(): Tensor {
@@ -219,6 +215,10 @@ export default class Tensor {
 
   lessEqual(other: Tensor): Tensor {
     return TensorMath.lessEqual(this, other);
+  }
+
+  log(): Tensor {
+    return TensorMath.log(this);
   }
 
   matmul(other: Tensor): Tensor {
@@ -336,6 +336,10 @@ export default class Tensor {
 
   toString() {
     return Tensor.tensorFormat.format(this);
+  }
+
+  transpose(newAxis: number[]): Tensor {
+    return TensorUtils.transpose(this, newAxis);
   }
 
   truncDiv(other: Tensor): Tensor {

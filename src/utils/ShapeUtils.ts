@@ -1,3 +1,5 @@
+import {Conv2dOptions} from "../op/cnn/Conv2dOp";
+
 export default class ShapeUtils {
 
   /**
@@ -24,6 +26,12 @@ export default class ShapeUtils {
     }
 
     return result;
+  }
+
+  static computeConv2dShape(imageShape: number[], kernelShape: number[], options: Conv2dOptions) {
+    let outputHeight = ShapeUtils.computeConvOutSize(imageShape[2], kernelShape[2], options.padHeight, options.strideHeight);
+    let outputWidth = ShapeUtils.computeConvOutSize(imageShape[3], kernelShape[3], options.padWidth, options.strideWidth);
+    return [imageShape[0], kernelShape[0], outputHeight, outputWidth];
   }
 
   static computeConvOutSize(imageSize: number, kernelSize: number, padSize = 0, stride = 1) {
