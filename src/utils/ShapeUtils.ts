@@ -220,4 +220,16 @@ export default class ShapeUtils {
     }
     return true;
   }
+
+  static transposeShape(shape: number[], newAxis: number[]): number[] {
+    let rank = shape.length;
+    let newShape = new Array(rank);
+
+    for (let i = 0; i < rank; i++) {
+      let axis = newAxis[i];
+      newShape[i] = shape[axis];
+    }
+
+    return newShape;
+  }
 }
