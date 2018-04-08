@@ -1,5 +1,4 @@
 import Tensor from "../../Tensor";
-import ShapeUtils from "../../utils/ShapeUtils";
 import Operation from "../Operation";
 import TensorMath from "../../TensorMath";
 
@@ -66,7 +65,7 @@ export default class Conv2dOp extends Operation {
       strideWidth: this.options.strideWidth
     });
 
-    let kRows = this.kernel.reshape([kernelShape[0],-1]);
+    let kRows = this.kernel.reshape([kernelShape[0], -1]);
     let result = TensorMath.matmul(kRows, xCol);
     let reshaped = result.reshape([kernelShape[0], imageShape[0], outputShape[2], outputShape[3]]);
     let transposed = reshaped.transpose([1, 0, 2, 3]);
