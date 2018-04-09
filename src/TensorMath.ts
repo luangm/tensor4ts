@@ -83,6 +83,7 @@ import ErfcGradOp from "./op/transform/ErfcGradOp";
 import GammaOp from "./op/transform/GammaOp";
 import LgammaOp from "./op/transform/LgammaOp";
 import {Conv2dOptions, default as Conv2dOp} from "./op/cnn/Conv2dOp";
+import DupOp from "./op/transform/DupOp";
 
 export default class TensorMath {
 
@@ -221,14 +222,14 @@ export default class TensorMath {
     return result;
   }
 
-  // static conv2dImageGrad(image, kernel, grad) {
+  // static conv2dImageGrad(image: Tensor, kernel: Tensor, grad: Tensor): Tensor {
   //   let numKernels = kernel.shape[0];
   //
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   let kReshape = kernel.reshape([numKernels, kernel.length / numKernels]);
   //   let col = TensorMath.matmul(kReshape, gradReshape, true, false);
   //
-  //   return TensorUtils.col2im(col, image, kernel).reshape(image.shape);
+  //   return TensorMath.col2im(col, image, kernel).reshape(image.shape);
   // }
   //
   // static conv2dKernelGrad(image, kernel, grad) {
@@ -237,6 +238,12 @@ export default class TensorMath {
   //   let gradReshape = grad.reshape([numKernels, grad.length / numKernels]);
   //   return TensorMath.matmul(gradReshape, xCol, false, true).reshape(kernel.shape);
   // }
+
+  static dup(base: Tensor, result?: Tensor): Tensor {
+    result = result || Tensor.zeros(base.shape);
+    Executor.exec(new DupOp(base, result));
+    return result;
+  }
 
   static elu(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
@@ -386,18 +393,6 @@ export default class TensorMath {
     return result.reshape(reducedShape);
   }
 
-  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
-    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
-    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
-    let result = Tensor.zeros(resultShape);
-    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
-    if (keepDims) {
-      return result;
-    }
-    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
-    return result.reshape(reducedShape);
-  }
-
   // static maxPool(image, kernelShape, strideWidth, strideHeight) {
   //
   //   let numImages = image.shape[0];
@@ -427,6 +422,18 @@ export default class TensorMath {
   //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
   //   return result;
   // }
+
+  static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
+    let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
+    let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
+    let result = Tensor.zeros(resultShape);
+    ReductionExecutor.exec(new L2NormOp(base, result, reducedDims));
+    if (keepDims) {
+      return result;
+    }
+    let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
+    return result.reshape(reducedShape);
+  }
 
   static less(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));

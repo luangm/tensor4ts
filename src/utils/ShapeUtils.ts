@@ -221,9 +221,15 @@ export default class ShapeUtils {
     return true;
   }
 
-  static transposeShape(shape: number[], newAxis: number[]): number[] {
+  static transposeShape(shape: number[], newAxis?: number[]): number[] {
     let rank = shape.length;
     let newShape = new Array(rank);
+    if (!newAxis) {
+      newAxis = new Array(rank);
+      for (let i = 0; i < newAxis.length; i++) {
+        newAxis[i] = rank - 1 - i;
+      }
+    }
 
     for (let i = 0; i < rank; i++) {
       let axis = newAxis[i];

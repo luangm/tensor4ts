@@ -150,6 +150,10 @@ export default class Tensor {
     return TensorMath.divide(this, other, this);
   }
 
+  dup(): Tensor {
+    return TensorMath.dup(this);
+  }
+
   equal(other: Tensor): Tensor {
     return TensorMath.equal(this, other);
   }
@@ -338,7 +342,7 @@ export default class Tensor {
     return Tensor.tensorFormat.format(this);
   }
 
-  transpose(newAxis: number[]): Tensor {
+  transpose(newAxis?: number[]): Tensor {
     return TensorUtils.transpose(this, newAxis);
   }
 

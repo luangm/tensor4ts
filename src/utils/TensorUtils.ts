@@ -172,10 +172,20 @@ export default class TensorUtils {
     return true;
   }
 
-  static transpose(tensor: Tensor, newAxis: number[]): Tensor {
+  static transpose(tensor: Tensor, newAxis?: number[]): Tensor {
     let rank = tensor.rank;
     let newStrides = new Array(rank);
     let newShape = new Array(rank);
+    if (!newAxis) {
+      newAxis = new Array(rank);
+      for (let i = 0; i < newAxis.length; i++) {
+        newAxis[i] = rank - 1 - i;
+      }
+    }
+
+    if (newAxis.length !== rank) {
+      throw new Error("newAxis.length must be the same as tensor.rank");
+    }
 
     for (let i = 0; i < rank; i++) {
       let axis = newAxis[i];
