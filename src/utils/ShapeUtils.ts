@@ -163,6 +163,14 @@ export default class ShapeUtils {
     return "c";
   }
 
+  static invertPermutation(axis: number[]): number[] {
+    let newAxis = axis.slice();
+    for (let i = 0; i < newAxis.length; i++) {
+      newAxis[axis[i]] = i;
+    }
+    return newAxis;
+  }
+
   static reduce(shape: number[], dimension: number): number[] {
     let result = shape.slice();
     for (let i = 0; i < shape.length; i++) {
