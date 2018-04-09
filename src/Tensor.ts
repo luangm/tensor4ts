@@ -225,8 +225,8 @@ export default class Tensor {
     return TensorMath.log(this);
   }
 
-  matmul(other: Tensor): Tensor {
-    return TensorMath.matmul(this, other);
+  matmul(other: Tensor, transposeLeft = false, transposeRight = false): Tensor {
+    return TensorMath.matmul(this, other, transposeLeft, transposeRight);
   }
 
   multiply(other: Tensor): Tensor {

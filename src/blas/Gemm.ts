@@ -84,7 +84,7 @@ export default class Gemm {
         for (let l = 0; l < k; l++) {
           temp += A[l * m + i] * B[l * n + j];
         }
-        let cIndex = i * k + j;
+        let cIndex = i * n + j;
         C[cIndex] = alpha * temp + (beta !== 0 ? beta * C[cIndex] : 0);
       }
     }
