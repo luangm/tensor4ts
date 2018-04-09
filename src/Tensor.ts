@@ -342,7 +342,7 @@ export default class Tensor {
     return Tensor.tensorFormat.format(this);
   }
 
-  transpose(newAxis?: number[]): Tensor {
+  transpose(newAxis: number[] = []): Tensor {
     return TensorUtils.transpose(this, newAxis);
   }
 

@@ -172,11 +172,11 @@ export default class TensorUtils {
     return true;
   }
 
-  static transpose(tensor: Tensor, newAxis?: number[]): Tensor {
+  static transpose(tensor: Tensor, newAxis: number[] = []): Tensor {
     let rank = tensor.rank;
     let newStrides = new Array(rank);
     let newShape = new Array(rank);
-    if (!newAxis) {
+    if (newAxis.length === 0) {
       newAxis = new Array(rank);
       for (let i = 0; i < newAxis.length; i++) {
         newAxis[i] = rank - 1 - i;
