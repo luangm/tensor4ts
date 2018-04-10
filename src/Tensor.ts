@@ -213,6 +213,10 @@ export default class Tensor {
     return TensorMath.greaterEqual(this, other);
   }
 
+  inspect() {
+    return this.toString();
+  }
+
   less(other: Tensor): Tensor {
     return TensorMath.less(this, other);
   }
