@@ -1,6 +1,6 @@
 {
   "name": "tensor4js",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "Tensor for JavaScript",
   "main": "dist/index.js",
   "module": "dist/lib/index.js",
