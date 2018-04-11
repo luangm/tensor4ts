@@ -84,3 +84,18 @@ test("conv2d", function () {
   console.log(result.toString());
   // expect(result).toEqual(expected);
 });
+
+test("maxpool", function () {
+  let image = Tensor.linspace(1, 16, 16).reshape([1, 1, 4, 4]);
+
+  let result = TensorMath.maxPool(image, {
+    strideWidth: 2,
+    strideHeight: 2,
+    kernelHeight: 2,
+    kernelWidth: 2,
+    kernelChannel: 1,
+    kernelNum: 1
+  });
+
+  console.log(result);
+});

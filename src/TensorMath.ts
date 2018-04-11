@@ -1,19 +1,31 @@
 import Executor from "./executor/Executor";
 import ReductionExecutor from "./executor/ReductionExecutor";
 import {Col2ImOptions, default as Col2ImOp} from "./op/cnn/Col2ImOp";
+import {Conv2dOptions, default as Conv2dOp} from "./op/cnn/Conv2dOp";
 import {default as Im2ColOp, Im2ColOptions} from "./op/cnn/Im2ColOp";
+import EqualOp from "./op/comparison/EqualOp";
+import GreaterEqualOp from "./op/comparison/GreaterEqualOp";
+import GreaterOp from "./op/comparison/GreaterOp";
+import LessEqualOp from "./op/comparison/LessEqualOp";
+import LessOp from "./op/comparison/LessOp";
+import NotEqualOp from "./op/comparison/NotEqualOp";
 import ArangeOp from "./op/creation/ArangeOp";
 import LinspaceOp from "./op/creation/LinspaceOp";
 import RepeatOp from "./op/creation/RepeatOp";
 import ArgMaxOp from "./op/index/ArgMaxOp";
 import ArgMinOp from "./op/index/ArgMinOp";
+import AddNOp from "./op/nary/AddNOp";
 import AddOp from "./op/pairwise/AddOp";
 import DivideOp from "./op/pairwise/DivideOp";
+import FloorDivOp from "./op/pairwise/FloorDivOp";
+import FloorModOp from "./op/pairwise/FloorModOp";
 import MaxOp from "./op/pairwise/MaxOp";
 import MinOp from "./op/pairwise/MinOp";
-import FloorModOp from "./op/pairwise/FloorModOp";
 import MultiplyOp from "./op/pairwise/MultiplyOp";
+import PowerOp from "./op/pairwise/PowerOp";
 import SubtractOp from "./op/pairwise/SubtractOp";
+import TruncDivOp from "./op/pairwise/TruncDivOp";
+import TruncModOp from "./op/pairwise/TruncModOp";
 import InfNormOp from "./op/reduction/InfNormOp";
 import L1NormOp from "./op/reduction/L1NormOp";
 import L2NormOp from "./op/reduction/L2NormOp";
@@ -24,6 +36,7 @@ import ReduceMinOp from "./op/reduction/ReduceMinOp";
 import ReduceProdOp from "./op/reduction/ReduceProdOp";
 import ReduceSumOp from "./op/reduction/ReduceSumOp";
 import MatMulOp from "./op/special/MatMulOp";
+import ConditionalOp from "./op/ternary/ConditionalOp";
 import AbsOp from "./op/transform/AbsOp";
 import AcoshOp from "./op/transform/AcoshOp";
 import AcosOp from "./op/transform/AcosOp";
@@ -34,14 +47,21 @@ import AtanOp from "./op/transform/AtanOp";
 import CeilOp from "./op/transform/CeilOp";
 import CoshOp from "./op/transform/CoshOp";
 import CosOp from "./op/transform/CosOp";
+import DupOp from "./op/transform/DupOp";
+import EluGradOp from "./op/transform/EluGradOp";
 import EluOp from "./op/transform/EluOp";
+import ErfcGradOp from "./op/transform/ErfcGradOp";
+import ErfcOp from "./op/transform/ErfcOp";
+import ErfGradOp from "./op/transform/ErfGradOp";
+import ErfOp from "./op/transform/ErfOp";
 import Expm1Op from "./op/transform/Expm1Op";
 import ExpOp from "./op/transform/ExpOp";
 import FloorOp from "./op/transform/FloorOp";
+import GammaOp from "./op/transform/GammaOp";
+import LgammaOp from "./op/transform/LgammaOp";
 import Log1pOp from "./op/transform/Log1pOp";
 import LogOp from "./op/transform/LogOp";
 import NegateOp from "./op/transform/NegateOp";
-import PowerOp from "./op/pairwise/PowerOp";
 import RandomOp from "./op/transform/RandomOp";
 import ReciprocalGradOp from "./op/transform/ReciprocalGradOp";
 import ReciprocalOp from "./op/transform/ReciprocalOp";
@@ -65,26 +85,6 @@ import TanhOp from "./op/transform/TanhOp";
 import TanOp from "./op/transform/TanOp";
 import Tensor from "./Tensor";
 import ShapeUtils from "./utils/ShapeUtils";
-import EluGradOp from "./op/transform/EluGradOp";
-import GreaterOp from "./op/comparison/GreaterOp";
-import EqualOp from "./op/comparison/EqualOp";
-import GreaterEqualOp from "./op/comparison/GreaterEqualOp";
-import LessEqualOp from "./op/comparison/LessEqualOp";
-import LessOp from "./op/comparison/LessOp";
-import NotEqualOp from "./op/comparison/NotEqualOp";
-import ConditionalOp from "./op/ternary/ConditionalOp";
-import TruncModOp from "./op/pairwise/TruncModOp";
-import FloorDivOp from "./op/pairwise/FloorDivOp";
-import TruncDivOp from "./op/pairwise/TruncDivOp";
-import ErfOp from "./op/transform/ErfOp";
-import ErfGradOp from "./op/transform/ErfGradOp";
-import ErfcOp from "./op/transform/ErfcOp";
-import ErfcGradOp from "./op/transform/ErfcGradOp";
-import GammaOp from "./op/transform/GammaOp";
-import LgammaOp from "./op/transform/LgammaOp";
-import {Conv2dOptions, default as Conv2dOp} from "./op/cnn/Conv2dOp";
-import DupOp from "./op/transform/DupOp";
-import AddNOp from "./op/nary/AddNOp";
 
 export default class TensorMath {
 
@@ -380,6 +380,28 @@ export default class TensorMath {
     return result;
   }
 
+  // static maxPool(image, kernelShape, strideWidth, strideHeight) {
+  //
+  //   let numImages = image.shape[0];
+  //   let channels = image.shape[1];
+  //   let height = image.shape[2]; // rows
+  //   let width = image.shape[3]; // cols
+  //
+  //   let numKernels = kernelShape[0];
+  //   let kernelChannels = kernelShape[1];
+  //   let kernelHeight = kernelShape[2]; // rows
+  //   let kernelWidth = kernelShape[3]; // cols
+  //
+  //   let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, 0, strideHeight);
+  //   let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, 0, strideWidth);
+  //
+  //   let xCol = TensorUtils.im2col(image, kernelShape, {strideWidth, strideHeight});
+  //   let max = TensorMath.reduceMax(xCol, 0);
+  //   let result = max.reshape([numImages, channels, outputHeight, outputWidth]);
+  //   return result;
+  // }
+  // }
+
   static infNorm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
     let resultShape = ShapeUtils.reduceShape(base.shape, dims, true);
@@ -403,36 +425,6 @@ export default class TensorMath {
     let reducedShape = ShapeUtils.reduceShape(base.shape, dims, false);
     return result.reshape(reducedShape);
   }
-
-  // static maxPool(image, kernelShape, strideWidth, strideHeight) {
-  //
-  //   let numImages = image.shape[0];
-  //   let channels = image.shape[1];
-  //   let height = image.shape[2]; // rows
-  //   let width = image.shape[3]; // cols
-  //
-  //   let numKernels = kernelShape[0];
-  //   let kernelChannels = kernelShape[1];
-  //   let kernelHeight = kernelShape[2]; // rows
-  //   let kernelWidth = kernelShape[3]; // cols
-  //
-  //   let outputHeight = TensorUtils.computeConv2dOutSize(height, kernelHeight, 0, strideHeight);
-  //   let outputWidth = TensorUtils.computeConv2dOutSize(width, kernelWidth, 0, strideWidth);
-  //
-  //   let xCol = TensorUtils.im2col(image, kernelShape, {strideWidth, strideHeight});
-  //   let max = TensorMath.reduceMax(xCol, 0);
-  //   let result = max.reshape([numImages, channels, outputHeight, outputWidth]);
-  //   return result;
-  // }
-  //
-  // static maxPoolGrad(image, kernel, grad, {strideWidth, strideHeight}) {
-  //   let xCol = TensorUtils.im2col(image, kernel.shape, {strideWidth, strideHeight});
-  //   let argmax = TensorMath.argMax(xCol, 0);
-  //   let gradReshape = grad.reshape([1, grad.length]);
-  //   let set = TensorMath.argSet(gradReshape, argmax, xCol.shape, 0);
-  //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
-  //   return result;
-  // }
 
   static l2Norm(base: Tensor, dims: number | number[] = -1, keepDims: boolean = false): Tensor {
     let reducedDims = ShapeUtils.getReducedDims(base.shape, dims);
@@ -500,6 +492,37 @@ export default class TensorMath {
     Executor.exec(new MaxOp(left, right, result));
     return result;
   }
+
+  static maxPool(base: Tensor, options: Im2ColOptions): Tensor {
+    let imageNum = base.shape[0];
+    let imageChannel = base.shape[1];
+    let imageHeight = base.shape[2]; // rows
+    let imageWidth = base.shape[3]; // cols
+
+    let kernelHeight = options.kernelHeight; // rows
+    let kernelWidth = options.kernelWidth; // cols
+
+    let padHeight = options.padHeight;
+    let padWidth = options.padWidth;
+    let strideHeight = options.strideHeight;
+    let strideWidth = options.strideWidth;
+
+    let outputHeight = ShapeUtils.computeConvOutSize(imageHeight, kernelHeight, padHeight, strideHeight);
+    let outputWidth = ShapeUtils.computeConvOutSize(imageWidth, kernelWidth, padWidth, strideWidth);
+
+    let xCol = TensorMath.im2col(base, options);
+    let max = xCol.reduceMax(0, true);
+    return max.reshape([imageNum, imageChannel, outputHeight, outputWidth]);
+  }
+  //
+  // static maxPoolGrad(image, kernel, grad, {strideWidth, strideHeight}) {
+  //   let xCol = TensorUtils.im2col(image, kernel.shape, {strideWidth, strideHeight});
+  //   let argmax = TensorMath.argMax(xCol, 0);
+  //   let gradReshape = grad.reshape([1, grad.length]);
+  //   let set = TensorMath.argSet(gradReshape, argmax, xCol.shape, 0);
+  //   let result = TensorUtils.col2im(set, image, kernel, {strideWidth, strideHeight}).reshape(image.shape);
+  //   return result;
+  // }
 
   static min(left: Tensor, right: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(ShapeUtils.broadcastShapes(left.shape, right.shape));
@@ -714,19 +737,6 @@ export default class TensorMath {
   //   return TensorMath.negate(sum);
   // }
 
-  // /**
-  //  * Normally a softmax derivative is a Jacobian Matrix.
-  //  * To get a total derivative, sum up all the partials.
-  //  *
-  //  * Assume shape of base = [batch, elements]
-  //  */
-  // static softmaxGrad(base, grad) {
-  //   let softmax = TensorMath.softmax(base); // default dim = -1
-  //   let mul = TensorMath.multiply(grad, softmax);
-  //   let sum = TensorMath.reduceSum(mul, 1); // reduce on last dim
-  //   let subtract = TensorMath.subtract(grad, sum); // Sum will broadcast
-  //   return TensorMath.multiply(subtract, softmax);
-  // }
 
   static sin(base: Tensor, result?: Tensor): Tensor {
     result = result || Tensor.zeros(base.shape);
