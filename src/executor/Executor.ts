@@ -11,6 +11,8 @@ import IndexExecutor from "./IndexExecutor";
 import ComparisonExecutor from "./ComparisonExecutor";
 import ConditionalOp from "../op/ternary/ConditionalOp";
 import ConditionalExecutor from "./ConditionalExecutor";
+import NaryOp from "../op/nary/NaryOp";
+import NaryExecutor from "./NaryExecutor";
 
 /**
  * Executor class is used to execute Ops
@@ -59,6 +61,11 @@ export class Executor {
 
     if (op instanceof IndexOp) {
       IndexExecutor.exec(op);
+      return;
+    }
+
+    if (op instanceof NaryOp) {
+      NaryExecutor.exec(op);
       return;
     }
 

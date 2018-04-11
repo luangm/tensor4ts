@@ -84,6 +84,7 @@ import GammaOp from "./op/transform/GammaOp";
 import LgammaOp from "./op/transform/LgammaOp";
 import {Conv2dOptions, default as Conv2dOp} from "./op/cnn/Conv2dOp";
 import DupOp from "./op/transform/DupOp";
+import AddNOp from "./op/nary/AddNOp";
 
 export default class TensorMath {
 
@@ -111,9 +112,19 @@ export default class TensorMath {
     return result;
   }
 
-  // TODO
-  static addN(items: Tensor[]): Tensor {
-    return Tensor.create(0);
+  static addN(items: Tensor[], result?: Tensor): Tensor {
+    if (items.length === 0) {
+      throw new Error("items cannot be empty");
+    }
+    let shapeX = items[0].shape;
+    for (let i = 1; i < items.length; i++) {
+      if (!ShapeUtils.shapeEquals(items[1].shape, shapeX)) {
+        throw new Error("items' shape must be the same");
+      }
+    }
+    result = result || Tensor.zeros(shapeX);
+    Executor.exec(new AddNOp(items, result));
+    return result;
   }
 
   static arange(stop: number, start: number = 0, step: number = 1, result?: Tensor): Tensor {
