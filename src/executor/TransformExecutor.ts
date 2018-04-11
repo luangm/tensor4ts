@@ -22,9 +22,14 @@ export class TransformExecutor {
     let result = op.result.data;
     let isZeros = op.base.isZeros;
 
+    let inputOffset = op.base.offset;
+    let resultOffset = op.result.offset;
+
     for (let i = 0; i < result.length; i++) {
-      let a = isZeros ? 0 : input[i];
-      result[i] = op.body(a);
+      let inputPtr = i + inputOffset;
+      let resultPtr = i + resultOffset;
+      let a = isZeros ? 0 : input[inputPtr];
+      result[resultPtr] = op.body(a);
     }
   }
 
@@ -36,12 +41,15 @@ export class TransformExecutor {
     let inputStrides = op.base.strides;
     let resultStrides = op.result.strides;
 
+    let inputOffset = op.base.offset;
+    let resultOffset = op.result.offset;
+
     let shape = op.result.shape;
 
     for (let i = 0; i < shape[0]; i++) {
       for (let j = 0; j < shape[1]; j++) {
-        let inputPointer = i * inputStrides[0] + j * inputStrides[1];
-        let resultPointer = i * resultStrides[0] + j * resultStrides[1];
+        let inputPointer = i * inputStrides[0] + j * inputStrides[1] + inputOffset;
+        let resultPointer = i * resultStrides[0] + j * resultStrides[1] + resultOffset;
 
         let a = isZeros ? 0 : input[inputPointer];
         result[resultPointer] = op.body(a);
@@ -56,8 +64,8 @@ export class TransformExecutor {
     let rank = shape.length | 0;
     let isZeros = op.base.isZeros;
 
-    let inputPointer = 0;
-    let resultPointer = 0;
+    let inputPointer = op.base.offset;
+    let resultPointer = op.result.offset;
 
     let MEM = []; // [ RevSlots(rank), shape, is, rs, ...]
     let iS = new Array(rank).fill(0);

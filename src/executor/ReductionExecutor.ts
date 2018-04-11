@@ -28,15 +28,18 @@ export class ReductionExecutor {
       op.result.filli(op.initialValue);
     }
 
+    let inputOffset = op.base.offset;
+    let resultOffset = op.result.offset;
+
     for (let i = 0; i < input.length; i++) {
-      let a = isZeros ? 0 : input[i];
+      let a = isZeros ? 0 : input[i + inputOffset];
       let value = op.body(a);
-      result[0] = op.update(result[0], value);
+      result[resultOffset] = op.update(result[resultOffset], value);
     }
 
     if (op.shouldPostProcess) {
       let n = input.length;
-      result[0] = op.getResult(result[0], n);
+      result[resultOffset] = op.getResult(result[resultOffset], n);
     }
   }
 
@@ -52,6 +55,8 @@ export class ReductionExecutor {
 
     let inputStrides = op.base.strides;
     let resultStrides = op.result.strides;
+    let inputOffset = op.base.offset;
+    let resultOffset = op.result.offset;
 
     let shape = op.base.shape; // accumulate around input, not the result
     let s0 = shape[0];
@@ -63,8 +68,8 @@ export class ReductionExecutor {
 
     for (let i = 0; i < s0; i++) {
       for (let j = 0; j < s1; j++) {
-        let inputPointer = i * is0 + j * is1;
-        let resultPointer = i * rs0 + j * rs1;
+        let inputPointer = i * is0 + j * is1 + inputOffset;
+        let resultPointer = i * rs0 + j * rs1 + resultOffset;
         let a = isZeros ? 0 : input[inputPointer];
         let value = op.body(a);
         result[resultPointer] = op.update(result[resultPointer], value);
@@ -98,8 +103,8 @@ export class ReductionExecutor {
     let shape = op.base.shape;
     let rank = shape.length | 0;
 
-    let inputPointer = 0;
-    let resultPointer = 0;
+    let inputPointer = op.base.offset;
+    let resultPointer = op.result.offset;
 
     let MEM = []; // [ RevSlots(rank), shape, is, rs, ...]
     let iS = new Array(rank).fill(0);

@@ -27,9 +27,13 @@ export class PairwiseExecutor {
     let leftZeros = op.left.isZeros;
     let rightZeros = op.right.isZeros;
 
-    let a = leftZeros ? 0 : left[0];
-    let b = rightZeros ? 0: right[0];
-    result[0] = op.body(a, b);
+    let leftPtr = op.left.offset;
+    let rightPtr = op.right.offset;
+    let resultPtr = op.result.offset;
+
+    let a = leftZeros ? 0 : left[leftPtr];
+    let b = rightZeros ? 0: right[rightPtr];
+    result[resultPtr] = op.body(a, b);
   }
 
   private exec1Vector(op: PairwiseOp): void {
@@ -52,17 +56,17 @@ export class PairwiseExecutor {
     let resultS0 = op.result.strides[0] | 0;
     let s0 = shape[0] | 0;
 
-    let iPtr = 0;
-    let oPtr = 0;
-    let rPtr = 0;
+    let leftPtr = op.left.offset | 0;
+    let rightPtr = op.right.offset | 0;
+    let resultPtr = op.result.offset | 0;
 
     for (let i = 0; i < s0; i++) {
-      let a = leftZeros ? 0 : input[iPtr];
-      let b = rightZeros ? 0: other[oPtr];
-      result[rPtr] = op.body(a, b);
-      iPtr = (iPtr + inputS0) | 0;
-      oPtr = (oPtr + otherS0) | 0;
-      rPtr = (rPtr + resultS0) | 0;
+      let a = leftZeros ? 0 : input[leftPtr];
+      let b = rightZeros ? 0: other[rightPtr];
+      result[resultPtr] = op.body(a, b);
+      leftPtr = (leftPtr + inputS0) | 0;
+      rightPtr = (rightPtr + otherS0) | 0;
+      resultPtr = (resultPtr + resultS0) | 0;
     }
   }
 
@@ -91,9 +95,9 @@ export class PairwiseExecutor {
     let s0 = shape[0] | 0;
     let s1 = shape[1] | 0;
 
-    let iPtr = 0;
-    let oPtr = 0;
-    let rPtr = 0;
+    let leftPtr = op.left.offset | 0;
+    let rightPtr = op.right.offset | 0;
+    let resultPtr = op.result.offset | 0;
 
     let inputD0 = (inputS0 - inputS1 * s1) | 0;
     let otherD0 = (otherS0 - otherS1 * s1) | 0;
@@ -106,18 +110,17 @@ export class PairwiseExecutor {
     for (let i = 0; i < s0; i++) {
 
       for (let j = 0; j < s1; j++) {
-        let a = leftZeros ? 0 : input[iPtr];
-        let b = rightZeros ? 0: other[oPtr];
-        result[rPtr] = op.body(a, b);
-        // result[rPtr] = op.body(input[iPtr], other[oPtr]);
-        iPtr = (iPtr + inputD1) | 0;
-        oPtr = (oPtr + otherD1) | 0;
-        rPtr = (rPtr + resultD1) | 0;
+        let a = leftZeros ? 0 : input[leftPtr];
+        let b = rightZeros ? 0: other[rightPtr];
+        result[resultPtr] = op.body(a, b);
+        leftPtr = (leftPtr + inputD1) | 0;
+        rightPtr = (rightPtr + otherD1) | 0;
+        resultPtr = (resultPtr + resultD1) | 0;
       }
 
-      iPtr = (iPtr + inputD0) | 0;
-      oPtr = (oPtr + otherD0) | 0;
-      rPtr = (rPtr + resultD0) | 0;
+      leftPtr = (leftPtr + inputD0) | 0;
+      rightPtr = (rightPtr + otherD0) | 0;
+      resultPtr = (resultPtr + resultD0) | 0;
     }
   }
 
@@ -137,9 +140,9 @@ export class PairwiseExecutor {
     let left = leftReshaped.data;
     let right = rightReshaped.data;
 
-    let leftPtr = 0;
-    let rightPtr = 0;
-    let resultPtr = 0;
+    let leftPtr = op.left.offset | 0;
+    let rightPtr = op.right.offset | 0;
+    let resultPtr = op.result.offset | 0;
 
     let rank = shape.length | 0;
 

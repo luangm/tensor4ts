@@ -1,9 +1,9 @@
 import Shape from "./Shape";
 import TensorMath from "./TensorMath";
+import ShapeUtils from "./utils/ShapeUtils";
 import TensorFactory from "./utils/TensorFactory";
 import TensorFormat from "./utils/TensorFormat";
 import TensorUtils from "./utils/TensorUtils";
-import ShapeUtils from "./utils/ShapeUtils";
 
 export default class Tensor {
 
@@ -263,6 +263,30 @@ export default class Tensor {
 
   reciprocali(): Tensor {
     return TensorMath.reciprocal(this, this);
+  }
+
+  reduceLogSumExp(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceLogSumExp(this, dims, keepDims);
+  }
+
+  reduceMax(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceMax(this, dims, keepDims);
+  }
+
+  reduceMean(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceMean(this, dims, keepDims);
+  }
+
+  reduceMin(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceMin(this, dims, keepDims);
+  }
+
+  reduceProd(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceProd(this, dims, keepDims);
+  }
+
+  reduceSum(dims: number | number[] = -1, keepDims = false): Tensor {
+    return TensorMath.reduceSum(this, dims, keepDims);
   }
 
   repeat(multiple: number, dimension: number = -1): Tensor {
