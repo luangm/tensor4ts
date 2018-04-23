@@ -11,13 +11,6 @@ export default class TensorFormat {
 
   private _options: TensorFormatOptions;
 
-  constructor(options: TensorFormatOptions = {}) {
-    options.separator = options.separator || '  ';
-    options.padding = options.padding || 0;
-    options.precision = options.precision || 8;
-    this._options = options;
-  }
-
   get separator() {
     return this._options.separator;
   }
@@ -26,46 +19,54 @@ export default class TensorFormat {
     this._options.separator = value;
   }
 
+  constructor(options: TensorFormatOptions = {}) {
+    options.separator = options.separator || "  ";
+    options.padding = options.padding || 0;
+    options.precision = options.precision || 8;
+    this._options = options;
+  }
+
   format(tensor: Tensor): string {
     return this.formatRecursive(tensor, tensor.rank);
   }
 
   private formatNumber(number: number) {
-    return number.toLocaleString('en-US', {
+    return number.toLocaleString("en-US", {
       useGrouping: false,
       maximumFractionDigits: this._options.precision
     });
   }
 
-  private  formatRecursive(tensor: Tensor, rank: number, offset = 0): string {
-    if (tensor.isScalar) {
+  private formatRecursive(tensor: Tensor, rank: number, offset = 0): string {
+    if (tensor.rank === 0) {
       return this.formatNumber(tensor.get([]));
     }
 
-    if (tensor.isVector) {
-      let result = '[';
+    if (tensor.rank === 1) {
+      let result = "[";
       for (let i = 0; i < tensor.length; i++) {
         result += this.formatNumber(tensor.get([i]));
         if (i < tensor.length - 1) {
           result += this._options.separator;
         }
       }
-      result += ']';
+      result += "]";
       return result;
     }
 
+    let slices = tensor.shape[0];
     offset++;
-    let result = '[';
-    for (let i = 0; i < tensor.slices; i++) {
-      let slice = tensor.slice2(i);
+    let result = "[";
+    for (let i = 0; i < slices; i++) {
+      let slice = tensor.sliceSingle(i);
       result += this.formatRecursive(slice, rank - 1, offset);
-      if (i !== tensor.slices - 1) {
-        result += this._options.separator + '\n';
-        result += '\n'.repeat(rank - 2);
-        result += ' '.repeat(offset);
+      if (i !== slices - 1) {
+        result += this._options.separator + "\n";
+        result += "\n".repeat(rank - 2);
+        result += " ".repeat(offset);
       }
     }
-    result += ']';
+    result += "]";
     return result;
   }
 }

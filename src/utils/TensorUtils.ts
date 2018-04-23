@@ -1,5 +1,5 @@
-import Tensor from "../Tensor";
 import Shape from "../Shape";
+import Tensor from "../Tensor";
 import ShapeUtils from "./ShapeUtils";
 
 export default class TensorUtils {
@@ -109,20 +109,8 @@ export default class TensorUtils {
     return offset;
   }
 
+
   static reshape(tensor: Tensor, newShape: number[]): Tensor {
-    for (let i = 0; i < newShape.length; i++) {
-      if (newShape[i] == -1) {
-
-        let prod = 1;
-        for (let j = 0; j < newShape.length; j++) {
-          if (j !== i) {
-            prod *= newShape[j];
-          }
-        }
-
-        newShape[i] = tensor.length / prod;
-      }
-    }
 
     if (TensorUtils.shapeEquals(tensor.shape, newShape)) {
       return tensor;

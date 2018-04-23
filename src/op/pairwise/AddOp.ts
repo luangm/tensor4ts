@@ -3,8 +3,8 @@ import Tensor from "../../Tensor";
 
 export default class AddOp extends PairwiseOp {
 
-  constructor(left: Tensor, right: Tensor, result: Tensor) {
-    super(left, right, result);
+  constructor(x: Tensor, y: Tensor, z: Tensor) {
+    super(x, y, z);
   }
 
   body(a: number, b: number): number {

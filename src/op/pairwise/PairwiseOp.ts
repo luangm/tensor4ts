@@ -1,29 +1,35 @@
-import Operation from "../Operation";
 import Tensor from "../../Tensor";
+import ShapeUtils from "../../utils/ShapeUtils";
+import Operation from "../Operation";
 
+/**
+ * Pairwise Op supports Broadcasting.
+ */
 export default abstract class PairwiseOp extends Operation {
 
-  private readonly _left: Tensor;
-  private readonly _result: Tensor;
-  private readonly _right: Tensor;
+  private readonly _x: Tensor;
+  private readonly _y: Tensor;
+  private readonly _z: Tensor;
 
-  get left() {
-    return this._left;
+  get x() {
+    return this._x;
   }
 
-  get result() {
-    return this._result;
+  get y() {
+    return this._y;
   }
 
-  get right() {
-    return this._right;
+  get z() {
+    return this._z;
   }
 
-  protected constructor(left: Tensor, right: Tensor, result: Tensor) {
-    super([left, right], [result]);
-    this._left = left;
-    this._right = right;
-    this._result = result;
+  protected constructor(x: Tensor, y: Tensor, z: Tensor) {
+    super([x, y], [z]);
+    this._z = z;
+    let xShape = ShapeUtils.getBroadcastedShape(x.shape, z.shape);
+    let yShape = ShapeUtils.getBroadcastedShape(y.shape, z.shape);
+    this._x = x.reshape(xShape);
+    this._y = y.reshape(yShape);
   }
 
   abstract body(a: number, b: number): number;

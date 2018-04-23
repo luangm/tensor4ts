@@ -1,317 +1,57 @@
-import Shape from "./Shape";
-import TensorMath from "./TensorMath";
-import ShapeUtils from "./utils/ShapeUtils";
-import TensorFactory from "./utils/TensorFactory";
-import TensorFormat from "./utils/TensorFormat";
-import TensorUtils from "./utils/TensorUtils";
+import {DataType} from "./DataType";
 
-export default class Tensor {
+export interface ArrayLike {
+  [index: number]: number;
+}
 
-  static tensorFormat: TensorFormat = new TensorFormat();
+/**
+ * This defines the interface to Tensor instances.
+ * Individual implementations should override methods to handle different data types.
+ */
+export default interface Tensor {
 
-  private readonly _data: Float32Array;
-  private readonly _isZeros: boolean = false;
-  private readonly _offset: number;
-  private readonly _shape: Shape;
-
-  get data() {
-    return this._data;
-  }
-
-  get isMatrix() {
-    return this.rank === 2;
-  }
-
-  get isScalar() {
-    return this.rank === 0;
-  }
-
-  get isVector() {
-    return this.rank === 1;
-  }
-
-  get isZeros() {
-    return this._isZeros;
-  }
-
-  get length() {
-    return this._shape.length;
-  }
-
-  get offset() {
-    return this._offset;
-  }
-
-  get rank() {
-    return this._shape.rank;
-  }
-
-  get shape() {
-    return this._shape.shape;
-  }
-
-  get slices() {
-    return this.shape[0];
-  }
-
-  get strides() {
-    return this._shape.strides;
-  }
-
-  constructor(data: Float32Array, shape: Shape, offset: number = 0, isZeros: boolean = false) {
-    this._data = data;
-    this._shape = shape;
-    this._offset = offset;
-    this._isZeros = isZeros;
-  }
+  readonly data: ArrayLike;
 
   /**
-   * arange function. Note that first parameter is stop, not start, due to how JS params works.
+   * The type of Data stored in the Tensor
    */
-  static arange(stop: number, start: number = 0, step: number = 1) {
-    return TensorFactory.arange(stop, start, step);
-  }
+  readonly dataType: DataType;
 
-  static create(array: number): Tensor;
+  /**
+   * The number of items in this Tensor
+   */
+  readonly length: number;
 
-  static create(array: number[]): Tensor;
+  /**
+   * Offset in the data. Typically comes from an slice op.
+   */
+  readonly offset: number;
 
-  static create(array: number[][]): Tensor;
+  /**
+   * c or f
+   */
+  readonly order: string;
 
-  static create(array: number[][][]): Tensor;
+  /**
+   * The rank of the Tensor
+   */
+  readonly rank: number;
 
-  static create(array: number[][][][]): Tensor;
+  /**
+   * The Shape of the Tensor
+   */
+  readonly shape: number[];
 
-  static create(array: any): Tensor {
-    return TensorFactory.create(array);
-  }
+  /**
+   *
+   */
+  readonly strides: number[];
 
-  static linspace(start: number, stop: number, num: number) {
-    return TensorFactory.linspace(start, stop, num);
-  }
+  get(indices: number[]): number;
 
-  static ones(shape: number[]) {
-    return TensorFactory.ones(shape);
-  }
+  reshape(shape: number[]): Tensor;
 
-  static rand(shape: number[]): Tensor {
-    return TensorFactory.rand(shape);
-  }
-
-  static scalar(scalar: number): Tensor {
-    return TensorFactory.scalar(scalar);
-  }
-
-  static sparseZeros(shape: number[]): Tensor {
-    return TensorFactory.sparseZeros(shape);
-  }
-
-  static zeros(shape: number[]): Tensor {
-    return TensorFactory.zeros(shape);
-  }
-
-  abs(): Tensor {
-    return TensorMath.abs(this);
-  }
-
-  absi(): Tensor {
-    return TensorMath.abs(this, this);
-  }
-
-  add(other: Tensor): Tensor {
-    return TensorMath.add(this, other);
-  }
-
-  addi(other: Tensor): Tensor {
-    let broadShapes = ShapeUtils.broadcastShapes(this.shape, other.shape);
-    if (!ShapeUtils.shapeEquals(this.shape, broadShapes)) {
-      throw "this must be the same shape as result shape";
-    }
-    return TensorMath.add(this, other, this);
-  }
-
-  broadcast(shape: number[]): Tensor {
-    return TensorUtils.broadcastTensor(this, shape);
-  }
-
-  ceil(): Tensor {
-    return TensorMath.ceil(this);
-  }
-
-  ceili(): Tensor {
-    return TensorMath.ceil(this, this);
-  }
-
-  divide(other: Tensor): Tensor {
-    return TensorMath.divide(this, other);
-  }
-
-  dividei(other: Tensor): Tensor {
-    return TensorMath.divide(this, other, this);
-  }
-
-  dup(): Tensor {
-    return TensorMath.dup(this);
-  }
-
-  equal(other: Tensor): Tensor {
-    return TensorMath.equal(this, other);
-  }
-
-  erf(): Tensor {
-    return TensorMath.erf(this);
-  }
-
-  erfc(): Tensor {
-    return TensorMath.erfc(this);
-  }
-
-  exp(): Tensor {
-    return TensorMath.exp(this);
-  }
-
-  fill(scalar: number): Tensor {
-    return TensorMath.fill(this, scalar);
-  }
-
-  filli(scalar: number): Tensor {
-    return TensorMath.fill(this, scalar, this);
-  }
-
-  floor(): Tensor {
-    return TensorMath.floor(this);
-  }
-
-  floorDiv(other: Tensor): Tensor {
-    return TensorMath.floorDiv(this, other);
-  }
-
-  floorMod(other: Tensor): Tensor {
-    return TensorMath.floorMod(this, other);
-  }
-
-  floori(): Tensor {
-    return TensorMath.floor(this, this);
-  }
-
-  get(indices: number | number[]): number {
-    if (this.isZeros) {
-      return 0;
-    }
-    if (!Array.isArray(indices)) {
-      indices = this._shape.getIndices(indices);
-    }
-    let offset = this._shape.getOffset(indices) + this.offset;
-    return this._data[offset];
-  }
-
-  greater(other: Tensor): Tensor {
-    return TensorMath.greater(this, other);
-  }
-
-  greaterEqual(other: Tensor): Tensor {
-    return TensorMath.greaterEqual(this, other);
-  }
-
-  inspect() {
-    return this.toString();
-  }
-
-  less(other: Tensor): Tensor {
-    return TensorMath.less(this, other);
-  }
-
-  lessEqual(other: Tensor): Tensor {
-    return TensorMath.lessEqual(this, other);
-  }
-
-  log(): Tensor {
-    return TensorMath.log(this);
-  }
-
-  matmul(other: Tensor, transposeLeft = false, transposeRight = false): Tensor {
-    return TensorMath.matmul(this, other, transposeLeft, transposeRight);
-  }
-
-  multiply(other: Tensor): Tensor {
-    return TensorMath.multiply(this, other);
-  }
-
-  negate() {
-    return TensorMath.negate(this);
-  }
-
-  negatei() {
-    return TensorMath.negate(this, this);
-  }
-
-  notEqual(other: Tensor): Tensor {
-    return TensorMath.notEqual(this, other);
-  }
-
-  reciprocal(): Tensor {
-    return TensorMath.reciprocal(this);
-  }
-
-  reciprocalGrad(): Tensor {
-    return TensorMath.reciprocalGrad(this);
-  }
-
-  reciprocalGradi(): Tensor {
-    return TensorMath.reciprocalGrad(this, this);
-  }
-
-  reciprocali(): Tensor {
-    return TensorMath.reciprocal(this, this);
-  }
-
-  reduceLogSumExp(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceLogSumExp(this, dims, keepDims);
-  }
-
-  reduceMax(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceMax(this, dims, keepDims);
-  }
-
-  reduceMean(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceMean(this, dims, keepDims);
-  }
-
-  reduceMin(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceMin(this, dims, keepDims);
-  }
-
-  reduceProd(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceProd(this, dims, keepDims);
-  }
-
-  reduceSum(dims: number | number[] = -1, keepDims = false): Tensor {
-    return TensorMath.reduceSum(this, dims, keepDims);
-  }
-
-  repeat(multiple: number, dimension: number = -1): Tensor {
-    return TensorMath.repeat(this, multiple, dimension);
-  }
-
-  reshape(shape: number[]): Tensor {
-    return TensorUtils.reshape(this, shape);
-  }
-
-  round(): Tensor {
-    return TensorMath.round(this);
-  }
-
-  roundi(): Tensor {
-    return TensorMath.round(this, this);
-  }
-
-  set(indices: number | number[], value: number): void {
-    if (!Array.isArray(indices)) {
-      indices = this._shape.getIndices(indices);
-    }
-    let offset = this._shape.getOffset(indices) + this.offset;
-    this._data[offset] = value;
-  }
+  set(indices: number[], value: number): void;
 
   /**
    * Slice the tensor.
@@ -323,63 +63,90 @@ export default class Tensor {
    * @param {number[]} size - the size(shape) of the slice.
    * @returns {Tensor}
    */
-  slice(begin: number[], size?: number[]): Tensor {
-    let offset = this.offset;
-    let newShape = this.shape.slice();
-    if (!size) {
-      size = new Array(this.rank).fill(-1);
-    }
+  slice(begin: number[], size?: number[]): Tensor;
 
-    for (let i = 0; i < this.rank; i++) {
-      let a = begin[i] < 0 ? begin[i] + this.shape[i] : begin[i];
-      offset += a * this.strides[i];
+  sliceSingle(num: number): Tensor;
 
-      let width = size[i] < 0 ? (this.shape[i] - a) : Math.min(this.shape[i] - a, size[i]);
-      newShape[i] = width;
-    }
+  // abs(): Tensor;
+  //
+  // add(other: Tensor): Tensor;
+  //
+  // broadcast(shape: number[]): Tensor;
+  //
+  // ceil(): Tensor;
+  //
+  // divide(other: Tensor): Tensor;
+  //
+  // dup(): Tensor;
+  //
+  // equal(other: Tensor): Tensor;
+  //
+  // erf(): Tensor;
+  //
+  // erfc(): Tensor;
+  //
+  // exp(): Tensor;
+  //
+  // fill(scalar: number): Tensor;
+  //
+  // floor(): Tensor;
+  //
+  // floorDiv(other: Tensor): Tensor;
+  //
+  // floorMod(other: Tensor): Tensor;
+  //
 
-    let shape = new Shape(newShape, this.strides, this._shape.order);
-    return new Tensor(this._data, shape, offset);
-  }
+  //
+  // greater(other: Tensor): Tensor;
+  //
+  // greaterEqual(other: Tensor): Tensor;
+  //
+  // less(other: Tensor): Tensor;
+  //
+  // lessEqual(other: Tensor): Tensor;
+  //
+  // log(): Tensor;
+  //
+  // matmul(other: Tensor, transposeLeft: boolean, transposeRight: boolean): Tensor;
+  //
+  // multiply(other: Tensor): Tensor;
+  //
+  // negate(): Tensor;
+  //
+  // notEqual(other: Tensor): Tensor;
+  //
+  // reciprocal(): Tensor;
+  //
+  // reciprocalGrad(): Tensor;
+  //
+  // reduceLogSumExp(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // reduceMax(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // reduceMean(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // reduceMin(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // reduceProd(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // reduceSum(dims: number | number[], keepDims: boolean): Tensor;
+  //
+  // repeat(multiple: number, dimension: number): Tensor;
+  //
 
-  slice2(num: number): Tensor {
-    let offset = this.offset;
-    let newShape = [];
-    let newStrides = [];
+  //
+  // round(): Tensor;
+  //
 
-    offset += num * this.strides[0];
-
-    for (let i = 1; i < this.rank; i++) {
-      newShape.push(this.shape[i]);
-      newStrides.push(this.strides[i]);
-    }
-
-    let shape = new Shape(newShape, newStrides, this._shape.order);
-    return new Tensor(this._data, shape, offset, this.isZeros);
-  }
-
-  subtract(other: Tensor): Tensor {
-    return TensorMath.subtract(this, other);
-  }
-
-  tile(repeats: number[]): Tensor {
-    return TensorMath.tile(this, repeats);
-  }
-
-  toString() {
-    return Tensor.tensorFormat.format(this);
-  }
-
-  transpose(newAxis: number[] = []): Tensor {
-    return TensorUtils.transpose(this, newAxis);
-  }
-
-  truncDiv(other: Tensor): Tensor {
-    return TensorMath.truncDiv(this, other);
-  }
-
-  truncMod(other: Tensor): Tensor {
-    return TensorMath.truncMod(this, other);
-  }
+  //
+  // subtract(other: Tensor): Tensor;
+  //
+  // tile(repeats: number[]): Tensor;
+  //
+  // transpose(newAxis: number[]): Tensor;
+  //
+  // truncDiv(other: Tensor): Tensor;
+  //
+  // truncMod(other: Tensor): Tensor;
 
 }

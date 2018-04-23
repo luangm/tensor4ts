@@ -163,6 +163,25 @@ export default class ShapeUtils {
     return "c";
   }
 
+  /**
+   * This method handles shape dimension == -1
+   */
+  static inferShape(length: number, shape: number[]) {
+    for (let i = 0; i < shape.length; i++) {
+      if (shape[i] == -1) {
+        let prod = 1;
+        for (let j = 0; j < shape.length; j++) {
+          if (j !== i && shape[j] > 1) {
+            prod *= shape[j];
+          }
+        }
+
+        shape[i] = length / prod;
+      }
+    }
+    return shape;
+  }
+
   static invertPermutation(axis: number[]): number[] {
     let newAxis = axis.slice();
     for (let i = 0; i < newAxis.length; i++) {
