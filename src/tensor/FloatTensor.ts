@@ -1,19 +1,25 @@
 import {DataType} from "../DataType";
 import Tensor from "../Tensor";
+import ArrayUtils from "../utils/ArrayUtils";
 import ShapeUtils from "../utils/ShapeUtils";
 import TensorFormat from "../utils/TensorFormat";
+import TensorFlags from "./TensorFlags";
 
 export default class FloatTensor implements Tensor {
 
   private static FORMAT: TensorFormat = new TensorFormat({});
 
   private readonly _data: Float32Array;
+  private readonly _flags: TensorFlags;
   private readonly _length: number;
   private readonly _offset: number;
-  private readonly _order: string;
   private readonly _rank: number;
   private readonly _shape: number[];
   private readonly _strides: number[];
+
+  get cContiguous() {
+    return this._flags.cContiguous;
+  }
 
   get data() {
     return this._data;
@@ -23,16 +29,16 @@ export default class FloatTensor implements Tensor {
     return DataType.Float32;
   }
 
+  get fContiguous() {
+    return this._flags.fContiguous;
+  }
+
   get length() {
     return this._length;
   }
 
   get offset() {
     return this._offset;
-  }
-
-  get order() {
-    return this._order;
   }
 
   get rank() {
@@ -47,14 +53,29 @@ export default class FloatTensor implements Tensor {
     return this._strides;
   }
 
-  constructor(data: Float32Array, shape: number[], strides?: number[], offset: number = 0, order: string = "c") {
+  constructor(data: Float32Array, shape: number[], strides?: number[], offset: number = 0) {
     this._data = data;
     this._shape = shape;
     this._rank = shape.length;
     this._strides = strides || ShapeUtils.getStrides(shape);
     this._length = ShapeUtils.getLength(shape);
     this._offset = offset;
-    this._order = order;
+    this._flags = ShapeUtils.inferFlags(this._shape, this._strides, this._offset);
+  }
+
+  broadcast(newShape: number[]): Tensor {
+    let allowed = ShapeUtils.canBroadcastTo(this.shape, newShape);
+    if (!allowed) {
+      throw new Error("Cannot broadcast to " + newShape);
+    }
+
+    let newStrides = ArrayUtils.padLeft(this.strides, newShape.length - this.shape.length, 0);
+    let broadcastIndices = ShapeUtils.getBroadcastIndices(this.shape, newShape);
+    for (let index of broadcastIndices) {
+      newStrides[index] = 0;
+    }
+
+    return new FloatTensor(this._data, newShape, newStrides, this.offset);
   }
 
   get(indices: number[]): number {
@@ -95,7 +116,7 @@ export default class FloatTensor implements Tensor {
       newShape[i] = size[i] < 0 ? (this.shape[i] - a) : Math.min(this.shape[i] - a, size[i]);
     }
 
-    return new FloatTensor(this._data, newShape, this.strides, offset, this.order);
+    return new FloatTensor(this._data, newShape, this.strides, offset);
   }
 
   sliceSingle(num: number): Tensor {
@@ -108,7 +129,7 @@ export default class FloatTensor implements Tensor {
       newStrides.push(this.strides[i]);
     }
 
-    return new FloatTensor(this._data, newShape, newStrides, offset, this.order);
+    return new FloatTensor(this._data, newShape, newStrides, offset);
   }
 
   toString() {
@@ -124,9 +145,7 @@ export default class FloatTensor implements Tensor {
   //   return TensorMath.add(this, other);
   // }
   //
-  // broadcast(shape: number[]): Tensor {
-  //   return TensorUtils.broadcastTensor(this, shape);
-  // }
+
   //
   // ceil(): Tensor {
   //   return TensorMath.ceil(this);

@@ -23,6 +23,13 @@ export default class ArrayUtils {
     this.flattenInternal(array, buffer, strides, indices, 0);
   }
 
+  static padLeft(array: number[], padSize: number, value: number): number[] {
+    let newArray = array.slice();
+    let pads: number[] = new Array(padSize).fill(value);
+    newArray.unshift(...pads);
+    return newArray;
+  }
+
   private static flattenInternal(array: any, buffer: ArrayLike, strides: number[], indices: number[], dim: number = 0) {
     for (let i = 0; i < array.length; i++) {
       let value = array[i];
@@ -43,5 +50,4 @@ export default class ArrayUtils {
     }
     return offset;
   }
-
 }

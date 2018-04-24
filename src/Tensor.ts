@@ -28,11 +28,6 @@ export default interface Tensor {
   readonly offset: number;
 
   /**
-   * c or f
-   */
-  readonly order: string;
-
-  /**
    * The rank of the Tensor
    */
   readonly rank: number;
@@ -46,6 +41,21 @@ export default interface Tensor {
    *
    */
   readonly strides: number[];
+
+  /**
+   * Whether the tensor is C-contiguous
+   */
+  readonly cContiguous: boolean;
+
+  /**
+   * Whether the tensor is F-contiguous
+   */
+  readonly fContiguous: boolean;
+
+  /**
+   * Broadcast the tensor to the new Shape
+   */
+  broadcast(newShape: number[]): Tensor;
 
   get(indices: number[]): number;
 

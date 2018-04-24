@@ -1,4 +1,5 @@
 import {Conv2dOptions} from "../op/cnn/Conv2dOp";
+import TensorFlags from "../tensor/TensorFlags";
 
 export default class ShapeUtils {
 
@@ -28,6 +29,30 @@ export default class ShapeUtils {
     return result;
   }
 
+  /**
+   * Check to see if shape can be broadcasted to newShape
+   * @param {number[]} shape
+   * @param {number[]} newShape
+   */
+  static canBroadcastTo(shape: number[], newShape: number[]): boolean {
+    if (shape.length > newShape.length) {
+      return false;
+    }
+
+    let i = newShape.length - 1;
+    let j = shape.length - 1;
+    for (; i >= 0 && j >= 0; i--, j--) {
+      let a = newShape[i];
+      let b = shape[j];
+
+      if (a !== 1 && b !== 1 && a !== b) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   static computeConv2dShape(imageShape: number[], kernelShape: number[], options: Conv2dOptions) {
     let outputHeight = ShapeUtils.computeConvOutSize(imageShape[2], kernelShape[2], options.padHeight, options.strideHeight);
     let outputWidth = ShapeUtils.computeConvOutSize(imageShape[3], kernelShape[3], options.padWidth, options.strideWidth);
@@ -40,6 +65,32 @@ export default class ShapeUtils {
       throw new Error("Cannot do conv with these values: imageSize: {" + imageSize + "}, kernelSize: {" + kernelSize + "}");
     }
     return result;
+  }
+
+  /**
+   * Returns the indices that are broadcasted
+   * @param {number[]} shape
+   * @param {number[]} newShape
+   * @returns {number[]}
+   */
+  static getBroadcastIndices(shape: number[], newShape: number[]): number[] {
+    let indices: number[] = [];
+    let i = newShape.length - 1;
+    let j = shape.length - 1;
+    for (; i >= 0 && j >= 0; i--, j--) {
+      let a = newShape[i];
+      let b = shape[j];
+
+      if (b === 1 && a !== 1) {
+        indices.push(i);
+      }
+    }
+
+    for (; i >= 0; i--) {
+      indices.push(i);
+    }
+
+    return indices;
   }
 
   /**
@@ -264,5 +315,12 @@ export default class ShapeUtils {
     }
 
     return newShape;
+  }
+
+  static inferFlags(shape: number[], strides: number[] | undefined, offset: number): TensorFlags {
+    return {
+      cContiguous: true,
+      fContiguous: true
+    }
   }
 }
