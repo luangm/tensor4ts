@@ -1,25 +1,10 @@
 import {DataType} from "../DataType";
-import Tensor from "../Tensor";
-import ArrayUtils from "../utils/ArrayUtils";
-import ShapeUtils from "../utils/ShapeUtils";
-import TensorFormat from "../utils/TensorFormat";
-import TensorFlags from "./TensorFlags";
+import Tensor, {TensorBufferLike} from "../Tensor";
+import TensorBase from "./TensorBase";
 
-export default class IntTensor implements Tensor {
-
-  private static FORMAT: TensorFormat = new TensorFormat({});
+export default class IntTensor extends TensorBase {
 
   private readonly _data: Int32Array;
-  private readonly _flags: TensorFlags;
-  private readonly _length: number;
-  private readonly _offset: number;
-  private readonly _rank: number;
-  private readonly _shape: number[];
-  private readonly _strides: number[];
-
-  get cContiguous() {
-    return this._flags.cContiguous;
-  }
 
   get data() {
     return this._data;
@@ -29,121 +14,20 @@ export default class IntTensor implements Tensor {
     return DataType.Int32;
   }
 
-  get fContiguous() {
-    return this._flags.cContiguous;
-  }
-
-  get length() {
-    return this._length;
-  }
-
-  get offset() {
-    return this._offset;
-  }
-
-  get rank() {
-    return this._rank;
-  }
-
-  get shape() {
-    return this._shape;
-  }
-
-  get strides() {
-    return this._strides;
-  }
-
   constructor(data: Int32Array, shape: number[], strides?: number[], offset: number = 0) {
+    super(data, shape, strides, offset);
     this._data = data;
-    this._shape = shape;
-    this._rank = shape.length;
-    this._strides = strides || ShapeUtils.getStrides(shape);
-    this._length = ShapeUtils.getLength(shape);
-    this._offset = offset;
-    this._flags = ShapeUtils.inferFlags(this._shape, this._strides, this._offset);
   }
 
-  broadcast(newShape: number[]): Tensor {
-    let allowed = ShapeUtils.canBroadcastTo(this.shape, newShape);
-    if (!allowed) {
-      throw new Error("Cannot broadcast to " + newShape);
-    }
-
-    let newStrides = ArrayUtils.padLeft(this.strides, newShape.length - this.shape.length, 0);
-    let broadcastIndices = ShapeUtils.getBroadcastIndices(this.shape, newShape);
-    for (let index of broadcastIndices) {
-      newStrides[index] = 0;
-    }
-
-    return new IntTensor(this._data, newShape, newStrides, this.offset);
-  }
-
-  get(indices: number[]): number {
-    let offset = this.offset;
-    for (let i = 0; i < this.rank; i++) {
-      offset += indices[i] * this.strides[i];
-    }
-    return this._data[offset];
-  }
-
-  inspect() {
-    return this.toString();
-  }
-
-  reshape(shape: number[]): Tensor {
-    let newShape = ShapeUtils.inferShape(this.length, shape);
-    return new IntTensor(this._data, newShape);
-  }
-
-  set(indices: number[], value: number): void {
-    let offset = this.offset;
-    for (let i = 0; i < this.rank; i++) {
-      offset += indices[i] * this.strides[i];
-    }
-    this._data[offset] = value;
-  }
-
-  slice(begin: number[], size?: number[]): Tensor {
-    let offset = this.offset;
-    let newShape = this.shape.slice();
-    if (!size) {
-      size = new Array(this.rank).fill(-1);
-    }
-
-    for (let i = 0; i < this.rank; i++) {
-      let a = begin[i] < 0 ? begin[i] + this.shape[i] : begin[i];
-      offset += a * this.strides[i];
-      newShape[i] = size[i] < 0 ? (this.shape[i] - a) : Math.min(this.shape[i] - a, size[i]);
-    }
-
-    return new IntTensor(this._data, newShape, this.strides, offset);
-  }
-
-  sliceSingle(num: number): Tensor {
-    let offset = this.offset + num * this.strides[0];
-    let newShape = [];
-    let newStrides = [];
-
-    for (let i = 1; i < this.rank; i++) {
-      newShape.push(this.shape[i]);
-      newStrides.push(this.strides[i]);
-    }
-
-    return new IntTensor(this._data, newShape, newStrides, offset);
-  }
-
-  toString() {
-    return IntTensor.FORMAT.format(this);
+  protected create(data: TensorBufferLike, shape: number[], strides?: number[], offset?: number): Tensor {
+    return new IntTensor(data as Int32Array, shape, strides, offset);
   }
 
   //
   // abs(): Tensor {
   //   return TensorMath.abs(this);
   // }
-  //
-  // add(other: Tensor): Tensor {
-  //   return TensorMath.add(this, other);
-  // }
+
   //
   // broadcast(shape: number[]): Tensor {
   //   return TensorUtils.broadcastTensor(this, shape);

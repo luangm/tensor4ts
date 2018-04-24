@@ -7,15 +7,15 @@ test("add", function () {
   console.log(x);
   console.log(x.dataType);
 
-  let y = TensorFactory.create([[2, 3, 4], [5, 6, 7]], DataType.Int32);
+  let y = TensorFactory.create([[2, 3, 4], [5, 6, 7]], DataType.Float32);
   console.log(y);
   console.log(y.dataType);
 
-  let z = TensorMath.add(x, y);
+  let z = x.add(y);
   console.log(z);
   console.log(z.dataType);
 
-  let expected = TensorFactory.create([[3, 5, 7], [9, 11, 13]], DataType.Int32);
+  let expected = TensorFactory.create([[3, 5, 7], [9, 11, 13]], DataType.Float32);
 
   expect(z).toEqual(expected);
   expect(z).not.toBe(x);

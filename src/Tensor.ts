@@ -1,6 +1,15 @@
 import {DataType} from "./DataType";
 
-export interface ArrayLike {
+export interface TensorBufferLike {
+  readonly BYTES_PER_ELEMENT: number;
+  readonly byteLength: number;
+  readonly byteOffset: number;
+  readonly length: number;
+
+  copyWithin(target: number, start: number, end?: number): this;
+
+  fill(value: number, start?: number, end?: number): this;
+
   [index: number]: number;
 }
 
@@ -10,47 +19,50 @@ export interface ArrayLike {
  */
 export default interface Tensor {
 
-  readonly data: ArrayLike;
-
-  /**
-   * The type of Data stored in the Tensor
-   */
-  readonly dataType: DataType;
-
-  /**
-   * The number of items in this Tensor
-   */
-  readonly length: number;
-
-  /**
-   * Offset in the data. Typically comes from an slice op.
-   */
-  readonly offset: number;
-
-  /**
-   * The rank of the Tensor
-   */
-  readonly rank: number;
-
-  /**
-   * The Shape of the Tensor
-   */
-  readonly shape: number[];
-
-  /**
-   *
-   */
-  readonly strides: number[];
-
   /**
    * Whether the tensor is C-contiguous
    */
   readonly cContiguous: boolean;
 
   /**
+   * This is used to access the data array directly.
+   * This is a common interface for TypedArrays.
+   */
+  readonly data: TensorBufferLike;
+
+  /**
+   * The type of Data stored in the Tensor
+   */
+  readonly dataType: DataType;
+  /**
    * Whether the tensor is F-contiguous
    */
   readonly fContiguous: boolean;
+  /**
+   * The number of items in this Tensor
+   */
+  readonly length: number;
+  /**
+   * Offset in the data. Typically comes from an slice op.
+   */
+  readonly offset: number;
+  /**
+   * The rank of the Tensor
+   */
+  readonly rank: number;
+  /**
+   * The Shape of the Tensor
+   */
+  readonly shape: number[];
+  /**
+   *
+   */
+  readonly strides: number[];
+
+  /**
+   * Add other with self. Return a new Tensor
+   */
+  add(other: Tensor): Tensor;
 
   /**
    * Broadcast the tensor to the new Shape
@@ -79,7 +91,7 @@ export default interface Tensor {
 
   // abs(): Tensor;
   //
-  // add(other: Tensor): Tensor;
+
   //
   // broadcast(shape: number[]): Tensor;
   //

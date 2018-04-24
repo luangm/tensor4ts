@@ -11,8 +11,8 @@ export default class TensorMath {
    * If z is specified then its used (assume shape is correct)
    */
   static add(x: Tensor, y: Tensor, z?: Tensor): Tensor {
-    let shape = ShapeUtils.broadcastShapes(x.shape, y.shape);
     if (!z) {
+      let shape = ShapeUtils.broadcastShapes(x.shape, y.shape);
       z = TensorFactory.empty(shape, x.dataType, y.dataType);
     }
     PairwiseExecutor2.exec(new AddOp(x, y, z));

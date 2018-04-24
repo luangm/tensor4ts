@@ -1,35 +1,7 @@
 import {DataType} from "../DataType";
-import Shape from "../Shape";
 
 export default class OldTensor {
 
-  private readonly _data: Float32Array;
-  private readonly _shape: Shape;
-
-  get data() {
-    return this._data;
-  }
-
-  get dataType() {
-    return DataType.Float32;
-  }
-
-  get length() {
-    return this._shape.length;
-  }
-
-  get rank() {
-    return this._shape.rank;
-  }
-
-  get shape() {
-    return this._shape.shape;
-  }
-
-  constructor(data: Float32Array, shape: Shape) {
-    this._data = data;
-    this._shape = shape;
-  }
 
   //
   // abs(): Tensor {

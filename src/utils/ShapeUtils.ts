@@ -7,23 +7,20 @@ export default class ShapeUtils {
    * Broadcast two shapes, return broadcasted shape
    */
   static broadcastShapes(a: number[], b: number[]): number[] {
-    let rank = Math.max(a.length, b.length);
-    let result = new Array(rank); //uninitialized
+    let result = [];
 
-    let aIndex = a.length - 1;
-    let bIndex = b.length - 1;
+    let i = a.length - 1;
+    let j = b.length - 1;
 
-    for (let dim = rank - 1; dim >= 0; dim--) {
-      let left = aIndex >= 0 ? a[aIndex] : 1;
-      let right = bIndex >= 0 ? b[bIndex] : 1;
+    for (; i >= 0 || j >= 0; i--, j--) {
+      let left = i >= 0 ? a[i] : 1;
+      let right = j >= 0 ? b[j] : 1;
 
       if (left !== 1 && right !== 1 && left !== right) {
         throw new Error("cannot broadcast shapes." + a + ", " + b + " not compatible");
       }
 
-      result[dim] = Math.max(left, right);
-      aIndex--;
-      bIndex--;
+      result.unshift(Math.max(left, right));
     }
 
     return result;
@@ -186,6 +183,13 @@ export default class ShapeUtils {
     return strides;
   }
 
+  static inferFlags(shape: number[], strides: number[] | undefined, offset: number): TensorFlags {
+    return {
+      cContiguous: true,
+      fContiguous: true
+    };
+  }
+
   static inferOrder(shape: number[], strides: number[]): string {
     let isFortran = true; // Fortran Contiguous
     let isC = true; // C Contiguous
@@ -315,12 +319,5 @@ export default class ShapeUtils {
     }
 
     return newShape;
-  }
-
-  static inferFlags(shape: number[], strides: number[] | undefined, offset: number): TensorFlags {
-    return {
-      cContiguous: true,
-      fContiguous: true
-    }
   }
 }

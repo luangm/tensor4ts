@@ -66,26 +66,10 @@ export default class TensorFactory {
   //   return TensorMath.rand(tensor, tensor);
   // }
 
-  static scalar(scalar: number): Tensor {
-    let data = new Float32Array([scalar]);
-    return new FloatTensor(data, []);
-  }
-
   // static sparseZeros(shape: number[]): Tensor {
   //   let shapeObj = new Shape(shape);
   //   let data = new Float32Array(0);
   //   return new FloatTensor(data, shapeObj, 0, true);
   // }
-
-  static vector(array: number[]): Tensor {
-    let data = new Float32Array(array);
-    return new FloatTensor(data, [array.length]);
-  }
-
-  static zeros(shape: number[]): Tensor {
-    let length = ShapeUtils.getLength(shape);
-    let data = new Float32Array(length);
-    return new FloatTensor(data, shape);
-  }
 
 }
