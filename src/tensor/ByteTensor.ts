@@ -1,5 +1,6 @@
 import {DataType} from "../DataType";
-import Tensor, {TensorBufferLike} from "../Tensor";
+import Tensor from "../Tensor";
+import TensorBuffer from "../TensorBuffer";
 import TensorBase from "./TensorBase";
 
 export default class ByteTensor extends TensorBase {
@@ -19,7 +20,7 @@ export default class ByteTensor extends TensorBase {
     this._data = data;
   }
 
-  protected create(data: TensorBufferLike, shape: number[], strides?: number[], offset?: number): Tensor {
+  protected create(data: TensorBuffer, shape: number[], strides?: number[], offset?: number): Tensor {
     return new ByteTensor(data as Uint8Array, shape, strides, offset);
   }
 

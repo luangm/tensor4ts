@@ -1,5 +1,6 @@
 import {DataType} from "../DataType";
-import Tensor, {TensorBufferLike} from "../Tensor";
+import Tensor from "../Tensor";
+import TensorBuffer from "../TensorBuffer";
 import TensorMath from "../TensorMath";
 import ArrayUtils from "../utils/ArrayUtils";
 import ShapeUtils from "../utils/ShapeUtils";
@@ -10,7 +11,7 @@ export default abstract class TensorBase implements Tensor {
 
   private static FORMAT: TensorFormat = new TensorFormat({});
 
-  abstract readonly data: TensorBufferLike;
+  abstract readonly data: TensorBuffer;
   abstract readonly dataType: DataType;
 
   private readonly _flags: TensorFlags;
@@ -48,7 +49,7 @@ export default abstract class TensorBase implements Tensor {
     return this._strides;
   }
 
-  protected constructor(data: TensorBufferLike, shape: number[], strides?: number[], offset: number = 0) {
+  protected constructor(data: TensorBuffer, shape: number[], strides?: number[], offset: number = 0) {
     this._shape = shape;
     this._rank = shape.length;
     this._strides = strides || ShapeUtils.getStrides(shape);
@@ -135,6 +136,6 @@ export default abstract class TensorBase implements Tensor {
     return TensorBase.FORMAT.format(this);
   }
 
-  protected abstract create(data: TensorBufferLike, shape: number[], strides?: number[], offset?: number): Tensor;
+  protected abstract create(data: TensorBuffer, shape: number[], strides?: number[], offset?: number): Tensor;
 
 }

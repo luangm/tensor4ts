@@ -1,17 +1,5 @@
 import {DataType} from "./DataType";
-
-export interface TensorBufferLike {
-  readonly BYTES_PER_ELEMENT: number;
-  readonly byteLength: number;
-  readonly byteOffset: number;
-  readonly length: number;
-
-  copyWithin(target: number, start: number, end?: number): this;
-
-  fill(value: number, start?: number, end?: number): this;
-
-  [index: number]: number;
-}
+import TensorBuffer from "./TensorBuffer";
 
 /**
  * This defines the interface to Tensor instances.
@@ -28,7 +16,7 @@ export default interface Tensor {
    * This is used to access the data array directly.
    * This is a common interface for TypedArrays.
    */
-  readonly data: TensorBufferLike;
+  readonly data: TensorBuffer;
 
   /**
    * The type of Data stored in the Tensor

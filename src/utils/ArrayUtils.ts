@@ -1,4 +1,4 @@
-import {ArrayLike} from "../Tensor";
+import TensorBuffer from "../TensorBuffer";
 import ShapeUtils from "./ShapeUtils";
 
 export default class ArrayUtils {
@@ -17,7 +17,7 @@ export default class ArrayUtils {
     return shape;
   }
 
-  static flatten(array: any, buffer: ArrayLike, shape: number[]) {
+  static flatten(array: any, buffer: TensorBuffer, shape: number[]) {
     let indices: number[] = new Array(shape.length).fill(0);
     let strides = ShapeUtils.getStrides(shape);
     this.flattenInternal(array, buffer, strides, indices, 0);
@@ -30,7 +30,7 @@ export default class ArrayUtils {
     return newArray;
   }
 
-  private static flattenInternal(array: any, buffer: ArrayLike, strides: number[], indices: number[], dim: number = 0) {
+  private static flattenInternal(array: any, buffer: TensorBuffer, strides: number[], indices: number[], dim: number = 0) {
     for (let i = 0; i < array.length; i++) {
       let value = array[i];
       indices[dim] = i;

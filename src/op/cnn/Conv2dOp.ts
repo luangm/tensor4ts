@@ -51,25 +51,25 @@ export default class Conv2dOp extends Operation {
   }
 
   exec(dim?: number): void {
-    let imageShape = this.image.shape;
-    let kernelShape = this.kernel.shape;
-    let outputShape = this.result.shape;
-    let xCol = TensorMath.im2col(this.image, {
-      kernelNum: kernelShape[0],
-      kernelChannel: kernelShape[1],
-      kernelHeight: kernelShape[2],
-      kernelWidth: kernelShape[3],
-      padHeight: this.options.padHeight,
-      padWidth: this.options.padWidth,
-      strideHeight: this.options.strideHeight,
-      strideWidth: this.options.strideWidth
-    });
-
-    let kRows = this.kernel.reshape([kernelShape[0], -1]);
-    let result = TensorMath.matmul(kRows, xCol);
-    let reshaped = result.reshape([kernelShape[0], imageShape[0], outputShape[2], outputShape[3]]);
-    let transposed = reshaped.transpose([1, 0, 2, 3]);
-    this._result = transposed;
+    // let imageShape = this.image.shape;
+    // let kernelShape = this.kernel.shape;
+    // let outputShape = this.result.shape;
+    // let xCol = TensorMath.im2col(this.image, {
+    //   kernelNum: kernelShape[0],
+    //   kernelChannel: kernelShape[1],
+    //   kernelHeight: kernelShape[2],
+    //   kernelWidth: kernelShape[3],
+    //   padHeight: this.options.padHeight,
+    //   padWidth: this.options.padWidth,
+    //   strideHeight: this.options.strideHeight,
+    //   strideWidth: this.options.strideWidth
+    // });
+    //
+    // let kRows = this.kernel.reshape([kernelShape[0], -1]);
+    // let result = TensorMath.matmul(kRows, xCol);
+    // let reshaped = result.reshape([kernelShape[0], imageShape[0], outputShape[2], outputShape[3]]);
+    // let transposed = reshaped.transpose([1, 0, 2, 3]);
+    // this._result = transposed;
   }
 
 }

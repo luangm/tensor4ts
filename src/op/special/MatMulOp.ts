@@ -1,6 +1,6 @@
-import Operation from "../Operation";
-import Tensor from "../../Tensor";
 import Gemm from "../../blas/Gemm";
+import Tensor from "../../Tensor";
+import Operation from "../Operation";
 
 export default class MatMulOp extends Operation {
 
@@ -30,7 +30,7 @@ export default class MatMulOp extends Operation {
     let n = transposeRight ? right.shape[0] : right.shape[1];
     let k = transposeLeft ? left.shape[0] : left.shape[1];
 
-    this._program = new Gemm(transposeLeft, transposeRight, m, n, k, 1, left.data, 0, right.data, 0, 0, result.data, 0);
+    this._program = new Gemm(transposeLeft, transposeRight, m, n, k, 1, left.data as Float32Array, 0, right.data as Float32Array, 0, 0, result.data as Float32Array, 0);
   }
 
   exec() {
